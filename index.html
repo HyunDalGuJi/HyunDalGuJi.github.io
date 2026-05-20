@@ -6,7 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0e1a">
-<title>750B 순번 확인</title>
+<title>750B 은평차고지 운행 확인</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -23,357 +23,136 @@
     --dim: #94a3b8;
     --muted: #475569;
   }
-
-  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
   body {
-    font-family: 'Noto Sans KR', -apple-system, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    min-height: 100dvh;
-    -webkit-font-smoothing: antialiased;
+    font-family:'Noto Sans KR',-apple-system,sans-serif;
+    background:var(--bg); color:var(--text);
+    min-height:100vh; min-height:100dvh;
+    -webkit-font-smoothing:antialiased;
   }
-
   body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
+    content:''; position:fixed; inset:0;
     background:
-      radial-gradient(ellipse 80% 50% at 50% 0%, rgba(59,130,246,0.07) 0%, transparent 60%),
-      radial-gradient(ellipse 50% 40% at 80% 100%, rgba(168,85,247,0.05) 0%, transparent 50%);
-    pointer-events: none;
+      radial-gradient(ellipse 80% 50% at 50% 0%,rgba(59,130,246,.07) 0%,transparent 60%),
+      radial-gradient(ellipse 50% 40% at 80% 100%,rgba(168,85,247,.05) 0%,transparent 50%);
+    pointer-events:none;
   }
+  .wrap { position:relative; z-index:1; max-width:480px; margin:0 auto; padding:20px 16px calc(env(safe-area-inset-bottom,0px)+40px); }
 
-  .wrap {
-    position: relative;
-    z-index: 1;
-    max-width: 480px;
-    margin: 0 auto;
-    padding: 20px 16px calc(env(safe-area-inset-bottom, 0px) + 40px);
-  }
+  /* ── Setup ── */
+  .setup { display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:85vh; min-height:85dvh; text-align:center; }
+  .setup .icon { font-size:48px; margin-bottom:20px; }
+  .setup h1 { font-size:22px; font-weight:900; margin-bottom:8px; }
+  .setup p { font-size:14px; color:var(--dim); line-height:1.7; margin-bottom:24px; max-width:340px; }
+  .field { width:100%; max-width:340px; margin-bottom:14px; }
+  .field label { display:block; font-size:12px; font-weight:600; color:var(--dim); text-align:left; margin-bottom:5px; }
+  .field input { width:100%; padding:13px 14px; background:var(--card); border:1px solid var(--border); border-radius:11px; color:var(--text); font-family:'JetBrains Mono',monospace; font-size:13px; outline:none; transition:border-color .2s; }
+  .field input:focus { border-color:var(--blue); }
+  .field input::placeholder { color:var(--muted); font-family:'Noto Sans KR',sans-serif; }
+  .go-btn { width:100%; max-width:340px; padding:14px; margin-top:6px; background:var(--blue); border:none; border-radius:11px; color:#fff; font-family:'Noto Sans KR',sans-serif; font-size:15px; font-weight:700; cursor:pointer; }
+  .go-btn:active { opacity:.85; }
+  .help { margin-top:18px; max-width:340px; text-align:left; }
+  .help summary { font-size:13px; color:var(--dim); cursor:pointer; list-style:none; }
+  .help summary::-webkit-details-marker { display:none; }
+  .help .inner { margin-top:10px; font-size:12px; color:var(--muted); line-height:1.8; }
+  .help a { color:var(--blue); text-decoration:none; }
+  .help ol { padding-left:18px; margin-top:6px; }
+  .help ol li { margin-bottom:5px; }
 
-  /* ═══════════ SETUP ═══════════ */
-  .setup {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 85vh;
-    min-height: 85dvh;
-    text-align: center;
-  }
+  /* ── Main ── */
+  .main { display:none; }
+  .hdr { text-align:center; margin-bottom:22px; }
+  .badge { display:inline-flex; align-items:center; gap:10px; background:linear-gradient(135deg,#1e3a5f,#1a2744); border:1px solid rgba(59,130,246,.3); border-radius:14px; padding:10px 20px; margin-bottom:10px; }
+  .badge .num { font-family:'JetBrains Mono',monospace; font-size:28px; font-weight:900; color:var(--blue); }
+  .badge .tag { font-size:11px; font-weight:500; color:var(--dim); background:rgba(59,130,246,.15); padding:3px 8px; border-radius:6px; }
+  .hdr h2 { font-size:14px; font-weight:400; color:var(--dim); }
+  .clock-bar { text-align:center; margin-bottom:18px; }
+  .clock { font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--muted); letter-spacing:1px; }
 
-  .setup .icon { font-size: 48px; margin-bottom: 20px; }
-  .setup h1 { font-size: 22px; font-weight: 900; margin-bottom: 8px; }
+  /* Big result */
+  .result-card { text-align:center; padding:28px 20px; margin-bottom:12px; }
+  .result-card.hero::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; opacity:.8; }
+  .result-card.yes { border-color:rgba(16,185,129,.3); }
+  .result-card.yes::before { background:var(--green); }
+  .result-card.no { border-color:rgba(239,68,68,.2); }
+  .result-card.no::before { background:var(--red); }
 
-  .setup p {
-    font-size: 14px; color: var(--dim);
-    line-height: 1.7; margin-bottom: 24px;
-    max-width: 340px;
-  }
+  .result-icon { font-size:56px; margin-bottom:12px; }
+  .result-title { font-size:22px; font-weight:900; margin-bottom:6px; }
+  .result-card.yes .result-title { color:#34d399; }
+  .result-card.no .result-title { color:#f87171; }
+  .result-sub { font-size:14px; color:var(--dim); line-height:1.6; }
+  .result-sub strong { color:var(--text); }
 
-  .field { width: 100%; max-width: 340px; margin-bottom: 14px; }
+  /* Card */
+  .card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:18px; margin-bottom:10px; position:relative; overflow:hidden; }
 
-  .field label {
-    display: block; font-size: 12px; font-weight: 600;
-    color: var(--dim); text-align: left; margin-bottom: 5px;
-  }
+  /* Station list preview */
+  .stations-preview { margin-top:12px; padding:12px; background:rgba(0,0,0,.2); border-radius:10px; max-height:120px; overflow-y:auto; }
+  .stations-preview .st-item { font-size:12px; color:var(--dim); padding:2px 0; display:inline; }
+  .stations-preview .st-item::after { content:' → '; color:var(--muted); }
+  .stations-preview .st-item:last-child::after { content:''; }
+  .stations-preview .st-item.highlight { color:var(--green); font-weight:700; }
+  .stations-preview .st-item.highlight-absent { color:var(--red); font-weight:700; }
 
-  .field input {
-    width: 100%; padding: 13px 14px;
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 11px; color: var(--text);
-    font-family: 'JetBrains Mono', monospace; font-size: 13px;
-    outline: none; transition: border-color .2s;
-  }
+  /* API status */
+  .api { padding:14px; }
+  .api-row { display:flex; align-items:center; gap:7px; }
+  .api-d { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+  .api-d.ok { background:var(--green); }
+  .api-d.ld { background:var(--orange); animation:pulse 1s infinite; }
+  .api-d.er { background:var(--red); }
+  .api-l { font-size:13px; font-weight:600; }
+  .api-det { font-size:12px; color:var(--muted); margin-top:5px; line-height:1.6; }
+  .api-raw { margin-top:8px; padding:9px; background:rgba(0,0,0,.25); border-radius:8px; font-family:'JetBrains Mono',monospace; font-size:11px; color:var(--dim); line-height:1.6; max-height:180px; overflow-y:auto; display:none; word-break:break-all; }
+  .api-tog { font-size:11px; color:var(--muted); background:none; border:none; cursor:pointer; margin-top:6px; text-decoration:underline; font-family:'Noto Sans KR',sans-serif; }
 
-  .field input:focus { border-color: var(--blue); }
-  .field input::placeholder { color: var(--muted); font-family: 'Noto Sans KR', sans-serif; }
-
-  .go-btn {
-    width: 100%; max-width: 340px;
-    padding: 14px; margin-top: 6px;
-    background: var(--blue); border: none; border-radius: 11px;
-    color: #fff; font-family: 'Noto Sans KR', sans-serif;
-    font-size: 15px; font-weight: 700; cursor: pointer;
-  }
-
-  .go-btn:active { opacity: .85; }
-
-  .help { margin-top: 18px; max-width: 340px; text-align: left; }
-
-  .help summary {
-    font-size: 13px; color: var(--dim); cursor: pointer;
-    list-style: none;
-  }
-
-  .help summary::-webkit-details-marker { display: none; }
-
-  .help .inner {
-    margin-top: 10px; font-size: 12px;
-    color: var(--muted); line-height: 1.8;
-  }
-
-  .help a { color: var(--blue); text-decoration: none; }
-  .help ol { padding-left: 18px; margin-top: 6px; }
-  .help ol li { margin-bottom: 5px; }
-  .help .warn { margin-top: 8px; font-size: 11px; }
-
-  /* ═══════════ MAIN ═══════════ */
-  .main { display: none; }
-
-  .hdr { text-align: center; margin-bottom: 22px; }
-
-  .badge {
-    display: inline-flex; align-items: center; gap: 10px;
-    background: linear-gradient(135deg, #1e3a5f, #1a2744);
-    border: 1px solid rgba(59,130,246,.3);
-    border-radius: 14px; padding: 10px 20px; margin-bottom: 10px;
-  }
-
-  .badge .num {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 28px; font-weight: 900; color: var(--blue);
-  }
-
-  .badge .tag {
-    font-size: 11px; font-weight: 500; color: var(--dim);
-    background: rgba(59,130,246,.15); padding: 3px 8px; border-radius: 6px;
-  }
-
-  .hdr h2 { font-size: 14px; font-weight: 400; color: var(--dim); }
-
-  .clock-bar { text-align: center; margin-bottom: 18px; }
-
-  .clock {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--muted); letter-spacing: 1px;
-  }
-
-  .run-badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    margin-top: 7px; padding: 5px 13px; border-radius: 20px;
-    font-size: 13px; font-weight: 700;
-  }
-
-  .run-badge.on {
-    background: rgba(16,185,129,.15);
-    border: 1px solid rgba(16,185,129,.3); color: #34d399;
-  }
-
-  .run-badge.off {
-    background: rgba(100,116,139,.1);
-    border: 1px solid rgba(100,116,139,.2); color: #94a3b8;
-  }
-
-  .run-dot {
-    width: 6px; height: 6px; border-radius: 50%; background: currentColor;
-  }
-
-  .run-badge.on .run-dot { animation: pulse 2s ease-in-out infinite; }
-
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-  /* Cards */
-  .card {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 16px; padding: 18px; margin-bottom: 10px;
-    position: relative; overflow: hidden;
-  }
-
-  .card.hero::before {
-    content: ''; position: absolute;
-    top: 0; left: 0; right: 0; height: 3px;
-    background: linear-gradient(90deg, var(--blue), var(--purple));
-    opacity: .8;
-  }
-
-  .lbl {
-    font-size: 11px; font-weight: 600; color: var(--muted);
-    text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 5px;
-  }
-
-  .sub {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; color: var(--dim); margin-bottom: 14px;
-  }
-
-  /* Shifts */
-  .shifts { display: flex; gap: 10px; margin-bottom: 14px; }
-
-  .s {
-    flex: 1; border-radius: 12px;
-    padding: 14px 10px; text-align: center;
-  }
-
-  .s.e { background: rgba(59,130,246,.06); border: 1px solid rgba(59,130,246,.15); }
-  .s.l { background: rgba(168,85,247,.06); border: 1px solid rgba(168,85,247,.15); }
-
-  .s.e.on { background: rgba(59,130,246,.13); border-color: rgba(59,130,246,.4); box-shadow: 0 2px 14px rgba(59,130,246,.1); }
-  .s.l.on { background: rgba(168,85,247,.13); border-color: rgba(168,85,247,.4); box-shadow: 0 2px 14px rgba(168,85,247,.1); }
-
-  .s-tag { font-size: 10px; font-weight: 600; letter-spacing: 1px; margin-bottom: 3px; }
-  .s.e .s-tag { color: var(--blue); }
-  .s.l .s-tag { color: var(--purple); }
-
-  .s-name { font-size: 20px; font-weight: 900; margin-bottom: 8px; }
-  .s.e .s-name { color: #60a5fa; }
-  .s.l .s-name { color: #c084fc; }
-
-  .s-t {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 12px; color: var(--dim); line-height: 1.8;
-  }
-
-  .s-t b { color: var(--text); font-weight: 600; }
-
-  .s .me { margin-top: 7px; font-size: 11px; font-weight: 600; }
-  .s.e .me { color: var(--blue); }
-  .s.l .me { color: var(--purple); }
-
-  .me-dot {
-    display: inline-block; width: 5px; height: 5px;
-    border-radius: 50%; background: currentColor;
-    margin-right: 3px; animation: pulse 2s ease-in-out infinite;
-  }
-
-  /* Swap */
-  .swap {
-    display: flex; align-items: center; gap: 10px;
-    background: rgba(255,255,255,.02); border-radius: 10px; padding: 11px;
-  }
-
-  .swap-ico {
-    width: 30px; height: 30px; border-radius: 8px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 13px; background: rgba(245,158,11,.12); flex-shrink: 0;
-  }
-
-  .swap-txt { font-size: 12px; color: var(--dim); line-height: 1.5; }
-  .swap-txt strong { color: var(--text); }
-
-  /* API */
-  .api { padding: 14px; }
-
-  .api-row { display: flex; align-items: center; gap: 7px; }
-
-  .api-d { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
-  .api-d.ok { background: var(--green); }
-  .api-d.ld { background: var(--orange); animation: pulse 1s infinite; }
-  .api-d.er { background: var(--red); }
-
-  .api-l { font-size: 13px; font-weight: 600; }
-
-  .api-det { font-size: 12px; color: var(--muted); margin-top: 5px; line-height: 1.6; }
-
-  .api-raw {
-    margin-top: 8px; padding: 9px;
-    background: rgba(0,0,0,.25); border-radius: 8px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px; color: var(--dim); line-height: 1.6;
-    max-height: 140px; overflow-y: auto; display: none;
-    word-break: break-all;
-  }
-
-  .api-tog {
-    font-size: 11px; color: var(--muted); background: none;
-    border: none; cursor: pointer; margin-top: 6px;
-    text-decoration: underline; font-family: 'Noto Sans KR', sans-serif;
-  }
-
-  /* Info */
-  .ititle { font-size: 13px; font-weight: 700; margin-bottom: 8px; display: flex; align-items: center; gap: 5px; }
-
-  .ilist { list-style: none; }
-
-  .ilist li {
-    font-size: 13px; color: var(--dim); padding: 4px 0;
-    border-bottom: 1px solid rgba(255,255,255,.03);
-    display: flex; justify-content: space-between;
-  }
-
-  .ilist li:last-child { border: none; }
-
-  .ilist .v {
-    font-family: 'JetBrains Mono', monospace;
-    color: var(--text); font-weight: 500; font-size: 12px;
-  }
+  /* Swap row */
+  .swap { display:flex; align-items:center; gap:10px; background:rgba(255,255,255,.02); border-radius:10px; padding:11px; margin-top:12px; }
+  .swap-ico { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; background:rgba(245,158,11,.12); flex-shrink:0; }
+  .swap-txt { font-size:12px; color:var(--dim); line-height:1.5; }
+  .swap-txt strong { color:var(--text); }
 
   /* Buttons */
-  .btn {
-    display: flex; align-items: center; justify-content: center; gap: 7px;
-    width: 100%; padding: 12px; border-radius: 11px;
-    font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px; font-weight: 600; cursor: pointer; border: none;
-  }
-
-  .btn-p {
-    background: rgba(59,130,246,.1);
-    border: 1px solid rgba(59,130,246,.2); color: var(--blue);
-  }
-
-  .btn-p:active { background: rgba(59,130,246,.18); }
-
-  .btn-g {
-    background: transparent; color: var(--muted);
-    font-size: 12px; padding: 9px; margin-top: 3px;
-  }
-
-  .spinning svg { animation: spin 1s linear infinite; }
+  .btn { display:flex; align-items:center; justify-content:center; gap:7px; width:100%; padding:12px; border-radius:11px; font-family:'Noto Sans KR',sans-serif; font-size:14px; font-weight:600; cursor:pointer; border:none; }
+  .btn-p { background:rgba(59,130,246,.1); border:1px solid rgba(59,130,246,.2); color:var(--blue); }
+  .btn-p:active { background:rgba(59,130,246,.18); }
+  .btn-g { background:transparent; color:var(--muted); font-size:12px; padding:9px; margin-top:3px; }
+  .spinning svg { animation:spin 1s linear infinite; }
   @keyframes spin { 100%{transform:rotate(360deg)} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
 
   /* Explainer */
-  .exp {
-    background: var(--card); border: 1px solid var(--border);
-    border-radius: 13px; padding: 14px; margin-bottom: 10px; margin-top: 6px;
-  }
+  .exp { background:var(--card); border:1px solid var(--border); border-radius:13px; padding:14px; margin-bottom:10px; margin-top:6px; }
+  .exp summary { font-size:13px; font-weight:600; color:var(--dim); cursor:pointer; list-style:none; display:flex; align-items:center; gap:5px; }
+  .exp summary::-webkit-details-marker { display:none; }
+  .exp[open] summary { margin-bottom:8px; }
+  .exp .bd { font-size:12px; color:var(--muted); line-height:1.8; }
+  .exp .bd p { margin-bottom:5px; }
 
-  .exp summary {
-    font-size: 13px; font-weight: 600; color: var(--dim);
-    cursor: pointer; list-style: none; display: flex; align-items: center; gap: 5px;
-  }
+  .foot { text-align:center; padding:16px 0; font-size:11px; color:var(--muted); }
 
-  .exp summary::-webkit-details-marker { display: none; }
-  .exp[open] summary { margin-bottom: 8px; }
-
-  .exp .bd { font-size: 12px; color: var(--muted); line-height: 1.8; }
-  .exp .bd p { margin-bottom: 5px; }
-
-  .foot { text-align: center; padding: 16px 0; font-size: 11px; color: var(--muted); }
-
-  /* Skeleton */
-  .sk {
-    background: linear-gradient(90deg, rgba(255,255,255,.03) 25%, rgba(255,255,255,.06) 50%, rgba(255,255,255,.03) 75%);
-    background-size: 200% 100%;
-    animation: shim 1.5s infinite; border-radius: 8px;
-  }
-
+  .sk { background:linear-gradient(90deg,rgba(255,255,255,.03) 25%,rgba(255,255,255,.06) 50%,rgba(255,255,255,.03) 75%); background-size:200% 100%; animation:shim 1.5s infinite; border-radius:8px; }
   @keyframes shim { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 </style>
 </head>
 <body>
-
 <div class="wrap">
 
   <!-- ═══ SETUP ═══ -->
   <div class="setup" id="S">
     <div class="icon">🚌</div>
-    <h1>750B 순번 확인기</h1>
-    <p>서울시 공공데이터 API로 750B의 오늘자 첫차시간을 조회하여 앞순번/뒷순번을 판별합니다.</p>
-
+    <h1>750B 은평차고지 운행 확인</h1>
+    <p>서울시 API로 750B 노선의 경유 정류소를 조회하여,<br>이번 주 은평차고지에서 750B가 출발하는지 확인합니다.</p>
     <div class="field">
       <label>Cloudflare Worker URL</label>
       <input type="url" id="inW" placeholder="https://bus-proxy.내계정.workers.dev" autocomplete="off">
     </div>
-
     <div class="field">
-      <label>공공데이터포털 API 인증키 (Encoding)</label>
+      <label>공공데이터포털 API 인증키</label>
       <input type="text" id="inK" placeholder="serviceKey 붙여넣기" autocomplete="off">
     </div>
-
     <button class="go-btn" onclick="save()">시작하기</button>
-
     <details class="help">
       <summary>❓ 설정 방법 안내</summary>
       <div class="inner">
@@ -381,23 +160,16 @@
         <ol>
           <li><a href="https://www.data.go.kr" target="_blank">공공데이터포털</a> 회원가입 & 로그인</li>
           <li><a href="https://www.data.go.kr/data/15000193/openapi.do" target="_blank">서울특별시_노선정보조회 서비스</a>에서 활용신청</li>
-          <li>승인 후 마이페이지에서 Encoding 인증키 복사</li>
+          <li>승인 후 마이페이지에서 인증키 복사</li>
         </ol>
         <p style="margin-top:12px"><strong>2단계: Cloudflare Worker 배포</strong></p>
         <ol>
           <li><a href="https://dash.cloudflare.com" target="_blank">Cloudflare</a> 무료 가입</li>
-          <li>Workers & Pages → Create Worker</li>
-          <li>함께 제공된 <strong>cloudflare-worker.js</strong> 코드를 붙여넣고 Deploy</li>
+          <li>Workers & Pages → Create Worker → Deploy</li>
+          <li>Edit code → cloudflare-worker.js 코드 붙여넣기 → Deploy</li>
           <li>배포된 URL을 위 입력란에 입력</li>
         </ol>
-        <p style="margin-top:12px"><strong>3단계: GitHub Pages 호스팅</strong></p>
-        <ol>
-          <li>GitHub에 새 저장소 생성</li>
-          <li>이 HTML 파일을 <strong>index.html</strong>로 업로드</li>
-          <li>Settings → Pages → Branch: main → Save</li>
-          <li>https://내아이디.github.io/저장소명/ 으로 접속</li>
-        </ol>
-        <p class="warn">⚠️ 모든 키/URL은 브라우저 로컬에만 저장됩니다.</p>
+        <p style="margin-top:8px;font-size:11px">⚠️ 모든 키/URL은 브라우저 로컬에만 저장됩니다.</p>
       </div>
     </details>
   </div>
@@ -409,237 +181,186 @@
         <span class="num">750B</span>
         <span class="tag">간선버스</span>
       </div>
-      <h2>은평공영차고지 · 유성운수</h2>
+      <h2>은평차고지 출발 여부 확인</h2>
     </div>
-
     <div class="clock-bar">
       <div class="clock" id="clk"></div>
-      <div id="rBadge"></div>
     </div>
 
-    <div class="card hero">
-      <div class="lbl">오늘의 운행 순번</div>
-      <div class="sub" id="tDate">조회 중...</div>
-      <div class="shifts" id="shArea">
-        <div class="sk" style="height:155px;flex:1"></div>
-        <div class="sk" style="height:155px;flex:1"></div>
-      </div>
-      <div class="swap">
-        <div class="swap-ico">🔄</div>
-        <div class="swap-txt" id="swTxt">계산 중...</div>
-      </div>
+    <!-- BIG RESULT -->
+    <div class="card result-card" id="resultCard">
+      <div class="sk" style="height:180px"></div>
     </div>
 
+    <!-- API detail -->
     <div class="card api" id="apiC">
       <div class="api-row">
         <div class="api-d ld" id="aD"></div>
         <span class="api-l" id="aL">API 조회 중...</span>
       </div>
       <div class="api-det" id="aDet"></div>
-      <button class="api-tog" id="aTog" onclick="togRaw()" style="display:none">원본 데이터 보기</button>
+      <button class="api-tog" id="aTog" onclick="togRaw()" style="display:none">경유 정류소 목록 보기</button>
       <div class="api-raw" id="aRaw"></div>
-    </div>
-
-    <div class="card">
-      <div class="ititle">📋 순번별 운행 시간</div>
-      <ul class="ilist">
-        <li><span>앞순번 (첫차 조)</span><span class="v">04:00 ~ 21:35</span></li>
-        <li><span>뒷순번 (막차 조)</span><span class="v">05:45 ~ 23:10</span></li>
-        <li><span>교대 주기</span><span class="v">2주마다 월요일</span></li>
-        <li><span>공동구간</span><span class="v">수색교 ↔ 서울대</span></li>
-      </ul>
     </div>
 
     <button class="btn btn-p" id="rBtn" onclick="go()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
       다시 조회
     </button>
-
     <button class="btn btn-g" onclick="reset()">⚙️ 설정 변경</button>
 
-    <details class="exp">
+    <details class="exp" style="margin-top:8px">
       <summary>ℹ️ 작동 원리</summary>
       <div class="bd">
-        <p><strong>getRouteInfo</strong> API가 750B의 <strong>금일 첫차시간(firstBusTm)</strong>을 매일 갱신하여 반환합니다.</p>
-        <p>첫차 <strong>04시대</strong> → 앞순번 (첫차 조) · 첫차 <strong>05시대</strong> → 뒷순번 (막차 조)</p>
-        <p>이 값은 서울시 TOPIS의 실제 운행 계획 기반이므로 2주 교대를 별도 계산할 필요 없이 <strong>오늘 기준 정확한 결과</strong>를 보여줍니다.</p>
-        <p>데이터 흐름: 브라우저 → Cloudflare Worker(https 중계) → 서울시 API(ws.bus.go.kr)</p>
+        <p><strong>getStaionByRoute</strong> API로 750B 노선의 전체 경유 정류소 목록을 가져옵니다.</p>
+        <p>목록에 <strong>"은평차고지"</strong>가 포함되어 있으면 → 이번 주는 750B가 은평차고지에서 출발하는 주간입니다.</p>
+        <p>포함되어 있지 않으면 → 750A가 은평차고지에서 출발하는 주간이고, 750B는 봉천사거리 이후 일부 구간만 운행합니다.</p>
+        <p>이 교대는 격주 월요일에 일어나며, 매번 페이지를 열면 실시간 API 데이터로 확인합니다.</p>
       </div>
     </details>
 
-    <div class="foot">750B 순번 확인기 · 비공식 · 서울시 공공데이터 API</div>
+    <div class="foot">750B 은평차고지 운행 확인기 · 비공식 · 서울시 공공데이터 API</div>
   </div>
 </div>
 
 <script>
-// =====================================================================
-// Config
-// =====================================================================
-const SK = '750b_ck';  // localStorage prefix
-
-let workerUrl = '';
-let apiKey = '';
-let routeId = null;
-
-// ── Util ──
+const SK = '750b_ck';
+let workerUrl = '', apiKey = '', routeId = null;
 
 function kst() {
-  return new Date(new Date().toLocaleString('en-US', { timeZone: 'Asia/Seoul' }));
+  return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
 }
-
 function fd(d) {
-  const w = ['일','월','화','수','목','금','토'];
+  const w=['일','월','화','수','목','금','토'];
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${w[d.getDay()]})`;
 }
 
-function ft(h,m) {
-  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-}
-
-// ── API via Worker ──
+// ── API ──
 
 async function api(path, params) {
-  // Worker mirrors the same path structure as ws.bus.go.kr
-  const base = workerUrl.replace(/\/+$/, '');
+  const base = workerUrl.replace(/\/+$/,'');
   const qs = new URLSearchParams({ serviceKey: apiKey, ...params });
   const url = `${base}${path}?${qs}`;
   const res = await fetch(url);
   const txt = await res.text();
-  return { xml: new DOMParser().parseFromString(txt, 'text/xml'), raw: txt };
+  return { xml: new DOMParser().parseFromString(txt,'text/xml'), raw: txt };
 }
 
-async function findRoute() {
-  const { xml } = await api('/api/rest/busRouteInfo/getBusRouteList', { strSrch: '750' });
-
+function checkApiError(xml) {
   const hc = xml.querySelector('headerCd');
   if (hc && hc.textContent !== '0') {
     const hm = xml.querySelector('headerMsg');
     throw new Error(`API 오류: ${hm ? hm.textContent : hc.textContent}`);
   }
+}
 
+async function findRoute() {
+  const { xml } = await api('/api/rest/busRouteInfo/getBusRouteList', { strSrch: '750' });
+  checkApiError(xml);
   for (const it of xml.querySelectorAll('itemList')) {
-    const nm = (it.querySelector('busRouteNm')?.textContent || '').trim();
-    const ab = (it.querySelector('busRouteAbrv')?.textContent || '').trim();
+    const nm = (it.querySelector('busRouteNm')?.textContent||'').trim();
+    const ab = (it.querySelector('busRouteAbrv')?.textContent||'').trim();
     if (nm === '750B' || ab === '750B')
       return it.querySelector('busRouteId')?.textContent;
   }
-
-  // Retry with direct search
+  // Retry
   const { xml: x2 } = await api('/api/rest/busRouteInfo/getBusRouteList', { strSrch: '750B' });
+  checkApiError(x2);
   for (const it of x2.querySelectorAll('itemList')) {
-    const nm = (it.querySelector('busRouteNm')?.textContent || '').trim();
-    const ab = (it.querySelector('busRouteAbrv')?.textContent || '').trim();
+    const nm = (it.querySelector('busRouteNm')?.textContent||'').trim();
+    const ab = (it.querySelector('busRouteAbrv')?.textContent||'').trim();
     if (nm === '750B' || ab === '750B')
       return it.querySelector('busRouteId')?.textContent;
   }
   return null;
 }
 
-async function getInfo(rid) {
-  const { xml, raw } = await api('/api/rest/busRouteInfo/getRouteInfo', { busRouteId: rid });
+async function getStations(rid) {
+  // getStaionByRoute returns all stations on the route
+  const { xml, raw } = await api('/api/rest/busRouteInfo/getStaionByRoute', { busRouteId: rid });
+  checkApiError(xml);
 
-  const hc = xml.querySelector('headerCd');
-  if (hc && hc.textContent !== '0') {
-    const hm = xml.querySelector('headerMsg');
-    throw new Error(`API 오류: ${hm ? hm.textContent : hc.textContent}`);
+  const stations = [];
+  for (const it of xml.querySelectorAll('itemList')) {
+    const name = (it.querySelector('stationNm')?.textContent||'').trim();
+    const seq = (it.querySelector('seq')?.textContent||'').trim();
+    const section = (it.querySelector('section')?.textContent||'').trim();
+    const direction = (it.querySelector('direction')?.textContent||'').trim();
+    const arsId = (it.querySelector('arsId')?.textContent||'').trim();
+    stations.push({ name, seq, section, direction, arsId });
   }
-
-  const it = xml.querySelector('itemList');
-  if (!it) throw new Error('응답 데이터 없음');
-
-  const g = t => (it.querySelector(t)?.textContent || '').trim();
-  return {
-    busRouteId: g('busRouteId'), busRouteNm: g('busRouteNm'),
-    busRouteAbrv: g('busRouteAbrv'), stStationNm: g('stStationNm'),
-    edStationNm: g('edStationNm'), firstBusTm: g('firstBusTm'),
-    lastBusTm: g('lastBusTm'), term: g('term'), corpNm: g('corpNm'), raw
-  };
-}
-
-// ── Shift logic ──
-
-function pTime(s) {
-  if (!s || s.length < 12) return null;
-  return { h: parseInt(s.substring(8,10),10), m: parseInt(s.substring(10,12),10) };
-}
-
-function shift(fbt) {
-  const t = pTime(fbt);
-  if (!t) return null;
-  return t.h <= 4 ? 'first' : 'late';
-}
-
-function running(now, sh) {
-  const mm = now.getHours()*60 + now.getMinutes();
-  return sh === 'first'
-    ? (mm >= 240 && mm <= 1295)   // 04:00~21:35
-    : (mm >= 345 && mm <= 1390);  // 05:45~23:10
-}
-
-function nxtMon(now) {
-  const d = new Date(now);
-  const dow = d.getDay();
-  d.setDate(d.getDate() + (dow === 0 ? 1 : 8 - dow));
-  d.setHours(0,0,0,0);
-  return d;
+  return { stations, raw };
 }
 
 // ── Render ──
 
-function render(info) {
+function renderResult(stations) {
   const now = kst();
-  const sh = shift(info.firstBusTm);
-  const fT = pTime(info.firstBusTm);
-  const lT = pTime(info.lastBusTm);
-  const bf = sh === 'first';
+  const card = document.getElementById('resultCard');
 
-  document.getElementById('tDate').textContent = fd(now) + ' 기준';
+  // Check if 은평차고지 is in the station list
+  const epFound = stations.some(s =>
+    s.name.includes('은평차고지') || s.name.includes('은평공영차고지')
+  );
 
-  document.getElementById('shArea').innerHTML = `
-    <div class="s e ${bf?'on':''}">
-      <div class="s-tag">앞순번 · 첫차</div>
-      <div class="s-name">${bf?'750B':'750A'}</div>
-      <div class="s-t">
-        첫차 <b>${fT && bf ? ft(fT.h,fT.m) : '04:00'}</b><br>
-        막차 <b>~21:35</b>
+  // Find first and last station names
+  const firstName = stations.length > 0 ? stations[0].name : '?';
+  const lastName = stations.length > 0 ? stations[stations.length - 1].name : '?';
+
+  // Next Monday
+  const dow = now.getDay();
+  const daysToMon = dow === 0 ? 1 : (dow === 1 ? 7 : 8 - dow);
+  const nextMon = new Date(now);
+  nextMon.setDate(nextMon.getDate() + daysToMon);
+  nextMon.setHours(0,0,0,0);
+  const dLeft = Math.ceil((nextMon - now) / 864e5);
+
+  if (epFound) {
+    card.className = 'card result-card yes';
+    card.innerHTML = `
+      <div class="result-icon">✅</div>
+      <div class="result-title">750B 은평차고지 출발</div>
+      <div class="result-sub">
+        이번 주는 <strong>750B</strong>가 은평차고지에서 출발하는 주간입니다.<br>
+        전 구간(${firstName} → ${lastName}) 운행 중
       </div>
-      ${bf?'<div class="me"><span class="me-dot"></span>750B 해당</div>':''}
-    </div>
-    <div class="s l ${!bf?'on':''}">
-      <div class="s-tag">뒷순번 · 막차</div>
-      <div class="s-name">${!bf?'750B':'750A'}</div>
-      <div class="s-t">
-        첫차 <b>${fT && !bf ? ft(fT.h,fT.m) : '05:45'}</b><br>
-        막차 <b>${lT && !bf ? ft(lT.h,lT.m) : '~23:10'}</b>
+      <div class="swap">
+        <div class="swap-ico">🔄</div>
+        <div class="swap-txt">다음 월요일 <strong>${fd(nextMon)}</strong> (${dLeft}일 후)에 교대 가능성<br>
+        <span style="font-size:11px;color:var(--muted)">격주 교대 · 교대 여부는 월요일 재조회</span></div>
       </div>
-      ${!bf?'<div class="me"><span class="me-dot"></span>750B 해당</div>':''}
-    </div>`;
-
-  if (sh) {
-    const r = running(now, sh);
-    const lb = r
-      ? (bf ? '앞순번(첫차 조) 운행 중' : '뒷순번(막차 조) 운행 중')
-      : '현재 운행 시간 외';
-    document.getElementById('rBadge').innerHTML =
-      `<div class="run-badge ${r?'on':'off'}"><span class="run-dot"></span>${lb}</div>`;
+    `;
+  } else {
+    card.className = 'card result-card no';
+    card.innerHTML = `
+      <div class="result-icon">❌</div>
+      <div class="result-title">750B 은평차고지 미출발</div>
+      <div class="result-sub">
+        이번 주는 <strong>750A</strong>가 은평차고지에서 출발합니다.<br>
+        750B는 <strong>${firstName}</strong> 이후 구간만 운행 중
+      </div>
+      <div class="swap">
+        <div class="swap-ico">🔄</div>
+        <div class="swap-txt">다음 월요일 <strong>${fd(nextMon)}</strong> (${dLeft}일 후)에 교대 가능성<br>
+        <span style="font-size:11px;color:var(--muted)">격주 교대 · 교대 여부는 월요일 재조회</span></div>
+      </div>
+    `;
   }
-
-  const nm = nxtMon(now);
-  const dl = Math.ceil((nm - now) / 864e5);
-  document.getElementById('swTxt').innerHTML =
-    `다음 월요일: <strong>${fd(nm)}</strong> (${dl}일 후)<br>
-     <span style="font-size:11px;color:var(--muted)">격주 월요일 교대 · 교대 여부는 당일 재조회</span>`;
 
   // API card
   document.getElementById('aD').className = 'api-d ok';
   document.getElementById('aL').textContent = 'API 조회 성공';
   document.getElementById('aDet').innerHTML =
-    `노선: <strong>${info.busRouteAbrv||info.busRouteNm}</strong> · 운수사: <strong>${info.corpNm}</strong><br>
-     금일 첫차: <strong>${fT?ft(fT.h,fT.m):'—'}</strong> · 막차: <strong>${lT?ft(lT.h,lT.m):'—'}</strong> · 배차: <strong>${info.term||'—'}분</strong><br>
-     → 첫차 ${fT?fT.h:'?'}시 = <strong style="color:${bf?'var(--blue)':'var(--purple)'}">${bf?'앞순번 (첫차 조)':'뒷순번 (막차 조)'}</strong>`;
+    `경유 정류소 <strong>${stations.length}개</strong> 조회 완료<br>
+     기점: <strong>${firstName}</strong> · 종점: <strong>${lastName}</strong><br>
+     은평차고지 포함: <strong style="color:${epFound?'var(--green)':'var(--red)'}">${epFound?'예 ✓':'아니오 ✗'}</strong>`;
 
-  document.getElementById('aRaw').textContent =
-    Object.entries(info).filter(([k])=>k!=='raw').map(([k,v])=>`${k}: ${v}`).join('\n');
+  // Station list in raw area
+  const stText = stations.map((s,i) => {
+    const mark = (s.name.includes('은평차고지')||s.name.includes('은평공영차고지')) ? ' ★' : '';
+    return `${String(i+1).padStart(3,' ')}. ${s.name}${mark} (${s.arsId})`;
+  }).join('\n');
+  document.getElementById('aRaw').textContent = stText;
   document.getElementById('aTog').style.display = 'inline';
 }
 
@@ -647,13 +368,14 @@ function renderErr(msg) {
   document.getElementById('aD').className = 'api-d er';
   document.getElementById('aL').textContent = 'API 오류';
   document.getElementById('aDet').textContent = msg;
-  document.getElementById('shArea').innerHTML =
+  document.getElementById('resultCard').className = 'card result-card';
+  document.getElementById('resultCard').innerHTML =
     `<div style="text-align:center;padding:35px 0;color:var(--muted);font-size:13px">
        ⚠️ 데이터를 불러올 수 없습니다<br>설정을 확인하거나 잠시 후 다시 시도해주세요
      </div>`;
 }
 
-// ── Main flow ──
+// ── Main ──
 
 async function go() {
   const btn = document.getElementById('rBtn');
@@ -663,6 +385,7 @@ async function go() {
   document.getElementById('aDet').textContent = '';
   document.getElementById('aTog').style.display = 'none';
   document.getElementById('aRaw').style.display = 'none';
+  document.getElementById('resultCard').innerHTML = '<div class="sk" style="height:180px"></div>';
 
   try {
     if (!routeId) {
@@ -670,9 +393,13 @@ async function go() {
       routeId = await findRoute();
       if (!routeId) throw new Error('750B 노선을 찾을 수 없습니다.');
     }
-    document.getElementById('aDet').textContent = '오늘자 운행 정보 조회 중...';
-    const info = await getInfo(routeId);
-    render(info);
+
+    document.getElementById('aDet').textContent = '경유 정류소 목록 조회 중...';
+    const { stations } = await getStations(routeId);
+
+    if (stations.length === 0) throw new Error('경유 정류소 데이터가 비어있습니다.');
+
+    renderResult(stations);
   } catch (e) {
     console.error(e);
     renderErr(e.message);
@@ -687,36 +414,33 @@ async function go() {
 function save() {
   const w = document.getElementById('inW').value.trim();
   const k = document.getElementById('inK').value.trim();
-  if (!w || !k) { alert('두 값 모두 입력해주세요.'); return; }
-  workerUrl = w;
-  apiKey = k;
-  localStorage.setItem(SK+'_w', w);
-  localStorage.setItem(SK+'_k', k);
-  show();
-  go();
+  if (!w||!k) { alert('두 값 모두 입력해주세요.'); return; }
+  workerUrl = w; apiKey = k;
+  localStorage.setItem(SK+'_w',w);
+  localStorage.setItem(SK+'_k',k);
+  show(); go();
 }
 
 function reset() {
   localStorage.removeItem(SK+'_w');
   localStorage.removeItem(SK+'_k');
-  workerUrl = ''; apiKey = ''; routeId = null;
-  document.getElementById('M').style.display = 'none';
-  document.getElementById('S').style.display = 'flex';
-  document.getElementById('inW').value = '';
-  document.getElementById('inK').value = '';
+  workerUrl=''; apiKey=''; routeId=null;
+  document.getElementById('M').style.display='none';
+  document.getElementById('S').style.display='flex';
+  document.getElementById('inW').value='';
+  document.getElementById('inK').value='';
 }
 
 function show() {
-  document.getElementById('S').style.display = 'none';
-  document.getElementById('M').style.display = 'block';
+  document.getElementById('S').style.display='none';
+  document.getElementById('M').style.display='block';
 }
 
 function togRaw() {
   const el = document.getElementById('aRaw');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+  el.style.display = el.style.display==='none' ? 'block' : 'none';
 }
 
-// ── Clock ──
 function tick() {
   const n = kst();
   const t = n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
@@ -727,10 +451,9 @@ function tick() {
 // ── Init ──
 const sw = localStorage.getItem(SK+'_w');
 const sk = localStorage.getItem(SK+'_k');
-if (sw && sk) { workerUrl = sw; apiKey = sk; show(); go(); }
-setInterval(tick, 1000);
+if (sw && sk) { workerUrl=sw; apiKey=sk; show(); go(); }
+setInterval(tick,1000);
 tick();
 </script>
-
 </body>
 </html>
