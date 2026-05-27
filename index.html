@@ -6,112 +6,117 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0a0e1a">
-<title>750B 은평차고지 운행 확인</title>
+<title>750B 지금 다녀?</title>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🚌</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg:#0a0e1a; --card:#111827; --border:#1e293b;
-    --blue:#3b82f6; --green:#10b981; --orange:#f59e0b;
-    --red:#ef4444; --purple:#a855f7;
-    --text:#e2e8f0; --dim:#94a3b8; --muted:#475569;
+    --bg:#080c16;--card:#0f1729;--border:#1a2540;
+    --blue:#4d8df7;--green:#22c97a;--orange:#f5a623;
+    --red:#f05555;--purple:#b07ce8;--cyan:#4dd9d9;
+    --text:#dfe6f0;--dim:#8b99b0;--muted:#4a5672;
   }
   *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{font-family:'Noto Sans KR',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;min-height:100dvh;-webkit-font-smoothing:antialiased}
-  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 50% 0%,rgba(59,130,246,.07) 0%,transparent 60%),radial-gradient(ellipse 50% 40% at 80% 100%,rgba(168,85,247,.05) 0%,transparent 50%);pointer-events:none}
-  .wrap{position:relative;z-index:1;max-width:480px;margin:0 auto;padding:20px 16px calc(env(safe-area-inset-bottom,0px)+40px)}
+  body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 90% 40% at 50% -10%,rgba(77,141,247,.06) 0%,transparent 55%);pointer-events:none}
+  .wrap{position:relative;z-index:1;max-width:460px;margin:0 auto;padding:20px 14px calc(env(safe-area-inset-bottom,0px)+36px)}
 
-  /* Setup */
-  .setup{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:85vh;min-height:85dvh;text-align:center}
-  .setup .icon{font-size:48px;margin-bottom:20px}
-  .setup h1{font-size:22px;font-weight:900;margin-bottom:8px}
-  .setup p{font-size:14px;color:var(--dim);line-height:1.7;margin-bottom:24px;max-width:340px}
-  .field{width:100%;max-width:340px;margin-bottom:14px}
-  .field label{display:block;font-size:12px;font-weight:600;color:var(--dim);text-align:left;margin-bottom:5px}
-  .field input{width:100%;padding:13px 14px;background:var(--card);border:1px solid var(--border);border-radius:11px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;outline:none;transition:border-color .2s}
+  /* ── Setup ── */
+  .setup{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:85dvh;text-align:center}
+  .setup .icon{font-size:44px;margin-bottom:18px}
+  .setup h1{font-size:21px;font-weight:900;margin-bottom:6px;letter-spacing:-.3px}
+  .setup p{font-size:13px;color:var(--dim);line-height:1.7;margin-bottom:22px;max-width:320px}
+  .field{width:100%;max-width:320px;margin-bottom:12px}
+  .field label{display:block;font-size:11px;font-weight:600;color:var(--dim);text-align:left;margin-bottom:4px}
+  .field input{width:100%;padding:12px 13px;background:var(--card);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;outline:none;transition:border-color .2s}
   .field input:focus{border-color:var(--blue)}
   .field input::placeholder{color:var(--muted);font-family:'Noto Sans KR',sans-serif}
-  .go-btn{width:100%;max-width:340px;padding:14px;margin-top:6px;background:var(--blue);border:none;border-radius:11px;color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:15px;font-weight:700;cursor:pointer}
+  .go-btn{width:100%;max-width:320px;padding:13px;margin-top:4px;background:var(--blue);border:none;border-radius:10px;color:#fff;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:700;cursor:pointer}
   .go-btn:active{opacity:.85}
-  .help{margin-top:18px;max-width:340px;text-align:left}
-  .help summary{font-size:13px;color:var(--dim);cursor:pointer;list-style:none}
+  .help{margin-top:16px;max-width:320px;text-align:left}
+  .help summary{font-size:12px;color:var(--dim);cursor:pointer;list-style:none}
   .help summary::-webkit-details-marker{display:none}
-  .help .inner{margin-top:10px;font-size:12px;color:var(--muted);line-height:1.8}
+  .help .inner{margin-top:8px;font-size:11px;color:var(--muted);line-height:1.8}
   .help a{color:var(--blue);text-decoration:none}
-  .help ol{padding-left:18px;margin-top:6px}
-  .help ol li{margin-bottom:5px}
+  .help ol{padding-left:16px;margin-top:5px}
+  .help ol li{margin-bottom:4px}
 
-  /* Main */
+  /* ── Main ── */
   .main{display:none}
-  .hdr{text-align:center;margin-bottom:22px}
-  .badge{display:inline-flex;align-items:center;gap:10px;background:linear-gradient(135deg,#1e3a5f,#1a2744);border:1px solid rgba(59,130,246,.3);border-radius:14px;padding:10px 20px;margin-bottom:10px}
-  .badge .num{font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:900;color:var(--blue)}
-  .badge .tag{font-size:11px;font-weight:500;color:var(--dim);background:rgba(59,130,246,.15);padding:3px 8px;border-radius:6px}
-  .hdr h2{font-size:14px;font-weight:400;color:var(--dim)}
-  .clock-bar{text-align:center;margin-bottom:18px}
-  .clock{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
+  .hdr{text-align:center;margin-bottom:16px}
+  .hdr-badge{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,#162040,#131b33);border:1px solid rgba(77,141,247,.25);border-radius:12px;padding:8px 16px;margin-bottom:6px}
+  .hdr-badge .num{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:900;color:var(--blue)}
+  .hdr-badge .tag{font-size:10px;font-weight:500;color:var(--dim);background:rgba(77,141,247,.12);padding:2px 7px;border-radius:5px}
+  .hdr h2{font-size:13px;font-weight:400;color:var(--dim)}
+  .clock-bar{text-align:center;margin-bottom:14px}
+  .clock{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.8px}
 
-  /* Result card */
-  .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;margin-bottom:10px;position:relative;overflow:hidden}
-  .result-card{text-align:center;padding:28px 20px}
-  .result-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:.8}
-  .result-card.yes{border-color:rgba(16,185,129,.3)}
-  .result-card.yes::before{background:var(--green)}
-  .result-card.no{border-color:rgba(239,68,68,.2)}
-  .result-card.no::before{background:var(--red)}
-  .result-card.maybe{border-color:rgba(245,158,11,.2)}
-  .result-card.maybe::before{background:var(--orange)}
-  .result-icon{font-size:56px;margin-bottom:12px}
-  .result-title{font-size:22px;font-weight:900;margin-bottom:6px}
-  .result-card.yes .result-title{color:#34d399}
-  .result-card.no .result-title{color:#f87171}
-  .result-card.maybe .result-title{color:#fbbf24}
-  .result-sub{font-size:14px;color:var(--dim);line-height:1.7}
-  .result-sub strong{color:var(--text)}
+  /* ── Result Card ── */
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:10px;position:relative;overflow:hidden}
+  .rc{text-align:center;padding:26px 18px 20px}
+  .rc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+  .rc.yes{border-color:rgba(34,201,122,.25)}.rc.yes::before{background:var(--green)}
+  .rc.ending{border-color:rgba(245,166,35,.2)}.rc.ending::before{background:var(--orange)}
+  .rc.no{border-color:rgba(240,85,85,.15)}.rc.no::before{background:var(--red)}
+  .rc-icon{font-size:52px;margin-bottom:10px}
+  .rc-title{font-size:22px;font-weight:900;margin-bottom:6px;letter-spacing:-.3px}
+  .rc.yes .rc-title{color:#34e88c}
+  .rc.ending .rc-title{color:#f5c06b}
+  .rc.no .rc-title{color:#f77}
+  .rc-sub{font-size:13px;color:var(--dim);line-height:1.7}
+  .rc-sub strong{color:var(--text)}
 
-  /* Arrival info */
-  .arr-box{margin-top:16px;padding:14px;background:rgba(0,0,0,.2);border-radius:12px;text-align:left}
-  .arr-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.03)}
-  .arr-row:last-child{border:none}
-  .arr-label{font-size:12px;color:var(--dim)}
-  .arr-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600}
+  /* ── Next Bus Box ── */
+  .next-box{margin-top:14px;padding:14px;background:rgba(34,201,122,.06);border:1px solid rgba(34,201,122,.15);border-radius:11px;text-align:left}
+  .next-box.none{background:rgba(240,85,85,.04);border-color:rgba(240,85,85,.1)}
+  .nb-title{font-size:10px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:8px}
+  .next-box.none .nb-title{color:var(--red)}
+  .nb-row{display:flex;justify-content:space-between;align-items:baseline;padding:4px 0}
+  .nb-label{font-size:12px;color:var(--dim)}
+  .nb-val{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:700;color:var(--text)}
+  .nb-val.em{color:var(--green);font-size:15px}
 
-  /* Swap */
-  .swap{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.02);border-radius:10px;padding:11px;margin-top:14px}
-  .swap-ico{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:13px;background:rgba(245,158,11,.12);flex-shrink:0}
-  .swap-txt{font-size:12px;color:var(--dim);line-height:1.5}
-  .swap-txt strong{color:var(--text)}
+  /* ── Route Map (mini) ── */
+  .route-card{padding:14px}
+  .route-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin-bottom:10px}
+  .route-line{position:relative;padding-left:22px}
+  .route-line::before{content:'';position:absolute;left:6px;top:4px;bottom:4px;width:2px;background:var(--border)}
+  .stop{position:relative;padding:4px 0 4px 0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px}
+  .stop::before{content:'';position:absolute;left:-16px;width:8px;height:8px;border-radius:50%;background:var(--border);border:1px solid var(--bg);z-index:1}
+  .stop.has-bus{color:var(--text);font-weight:600}
+  .stop.has-bus::before{background:var(--green);box-shadow:0 0 6px rgba(34,201,122,.4)}
+  .stop.origin::before{background:var(--blue);box-shadow:0 0 6px rgba(77,141,247,.4)}
+  .stop.origin{color:var(--blue);font-weight:700}
+  .stop .bus-tag{font-size:9px;background:rgba(34,201,122,.15);color:var(--green);padding:1px 5px;border-radius:4px;font-weight:600;margin-left:auto;flex-shrink:0}
+  .stop .arr-tag{font-size:9px;color:var(--dim);margin-left:auto;flex-shrink:0;font-family:'JetBrains Mono',monospace}
 
-  /* API */
-  .api{padding:14px}
-  .api-row{display:flex;align-items:center;gap:7px}
-  .api-d{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-  .api-d.ok{background:var(--green)}
-  .api-d.ld{background:var(--orange);animation:pulse 1s infinite}
-  .api-d.er{background:var(--red)}
-  .api-l{font-size:13px;font-weight:600}
-  .api-det{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.6}
-  .api-raw{margin-top:8px;padding:9px;background:rgba(0,0,0,.25);border-radius:8px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--dim);line-height:1.6;max-height:200px;overflow-y:auto;display:none;word-break:break-all}
-  .api-tog{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;margin-top:6px;text-decoration:underline;font-family:'Noto Sans KR',sans-serif}
+  /* ── API ── */
+  .api-card{padding:12px}
+  .api-row{display:flex;align-items:center;gap:6px}
+  .api-d{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+  .api-d.ok{background:var(--green)}.api-d.ld{background:var(--orange);animation:pulse 1s infinite}.api-d.er{background:var(--red)}
+  .api-l{font-size:12px;font-weight:600}
+  .api-det{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.6}
+  .api-raw{margin-top:6px;padding:8px;background:rgba(0,0,0,.3);border-radius:7px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--dim);line-height:1.5;max-height:220px;overflow-y:auto;display:none;word-break:break-all;white-space:pre-wrap}
+  .api-tog{font-size:10px;color:var(--muted);background:none;border:none;cursor:pointer;margin-top:5px;text-decoration:underline;font-family:'Noto Sans KR',sans-serif}
 
-  /* Buttons */
-  .btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:12px;border-radius:11px;font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:600;cursor:pointer;border:none}
-  .btn-p{background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.2);color:var(--blue)}
-  .btn-p:active{background:rgba(59,130,246,.18)}
-  .btn-g{background:transparent;color:var(--muted);font-size:12px;padding:9px;margin-top:3px}
+  /* ── Buttons ── */
+  .btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border-radius:10px;font-family:'Noto Sans KR',sans-serif;font-size:13px;font-weight:600;cursor:pointer;border:none}
+  .btn-p{background:rgba(77,141,247,.1);border:1px solid rgba(77,141,247,.2);color:var(--blue)}
+  .btn-p:active{background:rgba(77,141,247,.18)}
+  .btn-g{background:transparent;color:var(--muted);font-size:11px;padding:8px;margin-top:2px}
   .spinning svg{animation:spin 1s linear infinite}
   @keyframes spin{100%{transform:rotate(360deg)}}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 
-  /* Explainer */
-  .exp{background:var(--card);border:1px solid var(--border);border-radius:13px;padding:14px;margin-bottom:10px;margin-top:6px}
-  .exp summary{font-size:13px;font-weight:600;color:var(--dim);cursor:pointer;list-style:none;display:flex;align-items:center;gap:5px}
+  .exp{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px;margin-bottom:8px;margin-top:5px}
+  .exp summary{font-size:12px;font-weight:600;color:var(--dim);cursor:pointer;list-style:none;display:flex;align-items:center;gap:4px}
   .exp summary::-webkit-details-marker{display:none}
-  .exp[open] summary{margin-bottom:8px}
-  .exp .bd{font-size:12px;color:var(--muted);line-height:1.8}
-  .exp .bd p{margin-bottom:5px}
-  .foot{text-align:center;padding:16px 0;font-size:11px;color:var(--muted)}
-  .sk{background:linear-gradient(90deg,rgba(255,255,255,.03) 25%,rgba(255,255,255,.06) 50%,rgba(255,255,255,.03) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:8px}
+  .exp[open] summary{margin-bottom:6px}
+  .exp .bd{font-size:11px;color:var(--muted);line-height:1.8}
+  .exp .bd p{margin-bottom:4px}
+  .foot{text-align:center;padding:14px 0;font-size:10px;color:var(--muted)}
+  .sk{background:linear-gradient(90deg,rgba(255,255,255,.02) 25%,rgba(255,255,255,.05) 50%,rgba(255,255,255,.02) 75%);background-size:200% 100%;animation:shim 1.5s infinite;border-radius:7px}
   @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
 </style>
 </head>
@@ -121,8 +126,8 @@
   <!-- SETUP -->
   <div class="setup" id="S">
     <div class="icon">🚌</div>
-    <h1>750B 은평차고지 운행 확인</h1>
-    <p>은평차고지에서 750B가 지금 다니는 시간대인지<br>실시간 도착정보 API로 확인합니다.</p>
+    <h1>750B 지금 다녀?</h1>
+    <p>은평차고지에서 750B가 지금 출발하고 있는지<br>은평차고지~서울역 전체 구간을 실시간 조회합니다.</p>
     <div class="field">
       <label>Cloudflare Worker URL</label>
       <input type="url" id="inW" placeholder="https://bus-proxy.내계정.workers.dev" autocomplete="off">
@@ -136,11 +141,11 @@
       <summary>❓ 필요한 API (2개)</summary>
       <div class="inner">
         <ol>
-          <li><a href="https://www.data.go.kr/data/15000193/openapi.do" target="_blank">서울특별시_노선정보조회 서비스</a> — 750B 노선 ID & 정류소 정보 조회</li>
-          <li><a href="https://www.data.go.kr/data/15000314/openapi.do" target="_blank">서울특별시_버스도착정보조회 서비스</a> — 은평차고지 실시간 도착 정보</li>
+          <li><a href="https://www.data.go.kr/data/15000193/openapi.do" target="_blank">서울특별시_노선정보조회 서비스</a></li>
+          <li><a href="https://www.data.go.kr/data/15000314/openapi.do" target="_blank">서울특별시_버스도착정보조회 서비스</a></li>
         </ol>
-        <p style="margin-top:8px">두 API 모두 같은 인증키로 사용 가능합니다.</p>
-        <p>⚠️ 모든 키/URL은 브라우저 로컬에만 저장됩니다.</p>
+        <p style="margin-top:6px">같은 인증키로 두 API 모두 사용됩니다.</p>
+        <p>⚠️ 설정은 브라우저 로컬에만 저장됩니다.</p>
       </div>
     </details>
   </div>
@@ -148,60 +153,77 @@
   <!-- MAIN -->
   <div class="main" id="M">
     <div class="hdr">
-      <div class="badge">
+      <div class="hdr-badge">
         <span class="num">750B</span>
         <span class="tag">간선버스</span>
       </div>
-      <h2>은평차고지 실시간 도착 확인</h2>
+      <h2>은평차고지 → 서울역 실시간 확인</h2>
     </div>
-    <div class="clock-bar">
-      <div class="clock" id="clk"></div>
-    </div>
+    <div class="clock-bar"><div class="clock" id="clk"></div></div>
 
-    <div class="card result-card" id="resultCard">
-      <div class="sk" style="height:200px"></div>
-    </div>
-
-    <div class="card api" id="apiC">
-      <div class="api-row">
-        <div class="api-d ld" id="aD"></div>
-        <span class="api-l" id="aL">API 조회 중...</span>
-      </div>
+    <div class="card rc" id="rc"><div class="sk" style="height:200px"></div></div>
+    <div class="card route-card" id="routeCard" style="display:none"></div>
+    <div class="card api-card" id="apiC">
+      <div class="api-row"><div class="api-d ld" id="aD"></div><span class="api-l" id="aL">조회 중...</span></div>
       <div class="api-det" id="aDet"></div>
-      <button class="api-tog" id="aTog" onclick="togRaw()" style="display:none">원본 데이터 보기</button>
+      <button class="api-tog" id="aTog" onclick="togRaw()" style="display:none">원본 데이터</button>
       <div class="api-raw" id="aRaw"></div>
     </div>
 
     <button class="btn btn-p" id="rBtn" onclick="go()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
       다시 조회
     </button>
     <button class="btn btn-g" onclick="reset()">⚙️ 설정 변경</button>
 
-    <details class="exp" style="margin-top:8px">
+    <details class="exp" style="margin-top:6px">
       <summary>ℹ️ 작동 원리</summary>
       <div class="bd">
-        <p>750A와 750B는 <strong>수색교~서울대</strong> 같은 구간을 공동배차하며, 약 1시간 단위로 교대합니다 (AAAA-BBBB-AAAA-BBBB...).</p>
-        <p><strong>2주마다 월요일</strong>에 막차 시간대 담당이 A↔B로 바뀌면서, 아침 시간대에 750B가 나오는 주와 안 나오는 주가 달라집니다.</p>
-        <p>이 페이지는 은평차고지 정류소에서 750B의 <strong>실시간 도착 예정 정보</strong>를 조회합니다. 도착 예정 버스가 있으면 → 지금 750B 시간대, 없으면 → 750A 시간대입니다.</p>
+        <p>은평차고지부터 서울역까지 18개 정류소에서 750B 도착정보를 동시에 조회합니다.</p>
+        <p>노선 위에 750B 차량이 감지되고, 은평차고지에서 출발 예정이 있으면 → 운행 중으로 판정합니다.</p>
+        <p>차량은 감지되지만 은평차고지 출발 예정이 없으면 → 마지막 버스가 회차 중(운행 종료 중)으로 판정합니다.</p>
+        <p>1회 조회 = API 18건 호출 (일일 한도 1,000건 기준 약 55회 조회 가능)</p>
       </div>
     </details>
-
-    <div class="foot">750B 은평차고지 운행 확인기 · 비공식 · 서울시 공공데이터 API</div>
+    <div class="foot">750B 실시간 확인기 · 비공식 · 서울시 공공데이터 API</div>
   </div>
 </div>
 
 <script>
-const SK = '750b_ck';
-let workerUrl = '', apiKey = '', routeId = null, epStation = null;
+// ═══════════════════════════════════════════════════════
+// 750B Real-time Checker
+// Checks 18 stations: 은평차고지 → 서울역
+// ═══════════════════════════════════════════════════════
 
-function kst() {
-  return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'}));
-}
+const SK = '750b_ck';
+let workerUrl = '', apiKey = '', routeId = null;
+
+// Known stations: 은평차고지 → 서울역 (arsId from user's screenshot)
+// stId and ord(seq) will be resolved via getStaionByRoute on first load
+const STATION_ARSIDS = [
+  '35331','12001','12003','12005','12007',
+  '13001','13003','13005','13007','13008',
+  '13010','13012','13014','13016','13036',
+  '13038','13039','02004'
+];
+
+const STATION_NAMES = [
+  '은평공영차고지','덕은교.은평차고지앞','수색교','수색역앞','디지털미디어시티역',
+  '북가좌동삼거리','DMC래미안e편한세상.요진아파트','모래내시장.가좌역','사천교',
+  '연희104고지앞.궁동근린공원','서대문우체국','연세대앞','세브란스병원앞',
+  '이대후문','영천시장(종)','서대문역','경찰청.동북아역사재단',
+  '서울역버스환승센터'
+];
+
+// Will be populated from API: { arsId → { stId, seq, name } }
+let stationMap = null;
+
+function kst() { return new Date(new Date().toLocaleString('en-US',{timeZone:'Asia/Seoul'})); }
 function fd(d) {
   const w=['일','월','화','수','목','금','토'];
   return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')} (${w[d.getDay()]})`;
 }
+function pad2(n){ return String(n).padStart(2,'0'); }
 
 // ── API ──
 
@@ -217,179 +239,244 @@ function chk(xml) {
   const hc = xml.querySelector('headerCd');
   if (hc && hc.textContent !== '0') {
     const hm = xml.querySelector('headerMsg');
-    throw new Error(`API 오류: ${hm ? hm.textContent : hc.textContent}`);
+    throw new Error(`API: ${hm ? hm.textContent : hc.textContent}`);
   }
 }
 
-// Step 1: Find 750B busRouteId
 async function findRoute() {
   const { xml } = await api('/api/rest/busRouteInfo/getBusRouteList', { strSrch: '750' });
   chk(xml);
   for (const it of xml.querySelectorAll('itemList')) {
     const nm = (it.querySelector('busRouteNm')?.textContent||'').trim();
     const ab = (it.querySelector('busRouteAbrv')?.textContent||'').trim();
-    if (nm === '750B' || ab === '750B')
-      return it.querySelector('busRouteId')?.textContent;
+    if (nm === '750B' || ab === '750B') return it.querySelector('busRouteId')?.textContent;
   }
   return null;
 }
 
-// Step 2: Find 은평차고지 station info from route's station list
-async function findEPStation(rid) {
+async function buildStationMap(rid) {
   const { xml } = await api('/api/rest/busRouteInfo/getStaionByRoute', { busRouteId: rid });
   chk(xml);
+  const map = {};
   for (const it of xml.querySelectorAll('itemList')) {
-    const name = (it.querySelector('stationNm')?.textContent||'').trim();
-    if (name.includes('은평차고지') || name.includes('은평공영차고지')) {
-      return {
+    const arsId = (it.querySelector('arsId')?.textContent||'').trim();
+    if (STATION_ARSIDS.includes(arsId)) {
+      map[arsId] = {
         stId: (it.querySelector('station')?.textContent||'').trim(),
-        arsId: (it.querySelector('arsId')?.textContent||'').trim(),
         seq: (it.querySelector('seq')?.textContent||'').trim(),
-        name: name
+        name: (it.querySelector('stationNm')?.textContent||'').trim(),
+        arsId
       };
     }
   }
-  return null;
+  return map;
 }
 
-// Step 3: Get arrival info at 은평차고지 for 750B
 async function getArrival(stId, rid, ord) {
-  const { xml, raw } = await api('/api/rest/arrive/getArrInfoByRoute', {
-    stId: stId,
-    busRouteId: rid,
-    ord: ord
-  });
-  chk(xml);
-
-  const it = xml.querySelector('itemList');
-  if (!it) return { exists: false, raw };
-
-  const g = t => (it.querySelector(t)?.textContent||'').trim();
-  return {
-    exists: true,
-    arrmsg1: g('arrmsg1'),       // 첫번째 도착 예정 메시지
-    arrmsg2: g('arrmsg2'),       // 두번째 도착 예정 메시지
-    traTime1: g('traTime1'),     // 첫번째 도착 예상 시간(초)
-    traTime2: g('traTime2'),     // 두번째 도착 예상 시간(초)
-    stNm: g('stNm'),             // 정류소명
-    busRouteAbrv: g('busRouteAbrv'),
-    nxtStn: g('nxtStn'),         // 다음 정류소
-    term: g('term'),             // 배차간격
-    firstTm: g('firstTm'),       // 첫차시간
-    lastTm: g('lastTm'),         // 막차시간
-    isArrive1: g('isArrive1'),
-    isArrive2: g('isArrive2'),
-    vehId1: g('vehId1'),         // 차량 ID (있으면 실제 운행 중)
-    vehId2: g('vehId2'),
-    raw
-  };
+  try {
+    const { xml } = await api('/api/rest/arrive/getArrInfoByRoute', { stId, busRouteId: rid, ord });
+    chk(xml);
+    const it = xml.querySelector('itemList');
+    if (!it) return null;
+    const g = t => (it.querySelector(t)?.textContent||'').trim();
+    return {
+      arrmsg1: g('arrmsg1'), arrmsg2: g('arrmsg2'),
+      vehId1: g('vehId1'), vehId2: g('vehId2'),
+      traTime1: g('traTime1'), traTime2: g('traTime2'),
+      stNm: g('stNm'), nxtStn: g('nxtStn'), term: g('term'),
+      firstTm: g('firstTm'), lastTm: g('lastTm'),
+      isArrive1: g('isArrive1'), isArrive2: g('isArrive2')
+    };
+  } catch { return null; }
 }
 
-// ──判別 Logic ──
+// ── Detection Logic ──
 
-function isBusRunning(arr) {
-  if (!arr.exists) return 'no';
+function hasBus(arr) {
+  if (!arr) return false;
+  const v1 = arr.vehId1||'0', v2 = arr.vehId2||'0';
+  if (v1 !== '0' && v1 !== '') return true;
+  if (v2 !== '0' && v2 !== '') return true;
+  const m1 = arr.arrmsg1||'', m2 = arr.arrmsg2||'';
+  const patterns = ['분', '곧 도착', '번째 전', '전역 출발', '진입중'];
+  for (const p of patterns) { if (m1.includes(p) || m2.includes(p)) return true; }
+  return false;
+}
 
-  const msg1 = arr.arrmsg1;
-  const msg2 = arr.arrmsg2;
+function hasEpDeparture(epArr) {
+  if (!epArr) return false;
+  const m = epArr.arrmsg1||'';
+  const patterns = ['분', '곧 도착', '번째 전', '전역 출발', '진입중'];
+  return patterns.some(p => m.includes(p));
+}
 
-  // 운행종료, 출발대기 등이면 지금은 안 다님
-  // 도착 예정 시간이 있거나 "~분후", "~번째 전" 등이면 운행 중
-  const noRunPatterns = ['운행종료', '출발대기', '회차대기'];
-
-  const hasNoRun1 = !msg1 || noRunPatterns.some(p => msg1.includes(p));
-  const hasNoRun2 = !msg2 || noRunPatterns.some(p => msg2.includes(p));
-
-  // 차량 ID가 있으면 확실히 운행 중
-  if (arr.vehId1 && arr.vehId1 !== '0' && !hasNoRun1) return 'yes';
-
-  // 메시지에 시간 정보가 있으면 운행 중
-  if (msg1 && (msg1.includes('분') || msg1.includes('곧 도착'))) return 'yes';
-
-  // 메시지가 운행종료면 확실히 안 다님
-  if (hasNoRun1 && hasNoRun2) return 'no';
-
-  return 'maybe';
+function extractMinutes(msg) {
+  if (!msg) return null;
+  const m = msg.match(/(\d+)\s*분/);
+  return m ? parseInt(m[1], 10) : null;
 }
 
 // ── Render ──
 
-function renderResult(arr) {
-  const now = kst();
-  const card = document.getElementById('resultCard');
-  const status = isBusRunning(arr);
+function render(results, now) {
+  const rc = document.getElementById('rc');
+  const routeCard = document.getElementById('routeCard');
 
-  // Next Monday
-  const dow = now.getDay();
-  const daysToMon = dow === 0 ? 1 : (dow === 1 ? 7 : 8 - dow);
-  const nextMon = new Date(now);
-  nextMon.setDate(nextMon.getDate() + daysToMon);
+  // Separate analysis
+  const epArsId = '35331';
+  const epArr = results[epArsId];
 
-  const swapHtml = `
-    <div class="swap">
-      <div class="swap-ico">🔄</div>
-      <div class="swap-txt">2주마다 교대 · 다음 월요일 <strong>${fd(nextMon)}</strong> (${daysToMon}일 후)<br>
-      <span style="font-size:11px;color:var(--muted)">교대 여부는 월요일 재조회로 확인</span></div>
-    </div>`;
+  // Condition A: any station has a bus
+  const busStations = []; // { idx, arsId, name, arr }
+  STATION_ARSIDS.forEach((arsId, idx) => {
+    const arr = results[arsId];
+    if (hasBus(arr)) {
+      busStations.push({ idx, arsId, name: STATION_NAMES[idx], arr });
+    }
+  });
+  const condA = busStations.length > 0;
 
-  const arrBoxHtml = arr.exists ? `
-    <div class="arr-box">
-      <div class="arr-row"><span class="arr-label">첫번째 버스</span><span class="arr-val">${arr.arrmsg1 || '정보 없음'}</span></div>
-      <div class="arr-row"><span class="arr-label">두번째 버스</span><span class="arr-val">${arr.arrmsg2 || '정보 없음'}</span></div>
-      ${arr.term ? `<div class="arr-row"><span class="arr-label">배차간격</span><span class="arr-val">${arr.term}분</span></div>` : ''}
-      ${arr.firstTm ? `<div class="arr-row"><span class="arr-label">첫차</span><span class="arr-val">${arr.firstTm}</span></div>` : ''}
-      ${arr.lastTm ? `<div class="arr-row"><span class="arr-label">막차</span><span class="arr-val">${arr.lastTm}</span></div>` : ''}
-    </div>` : '';
+  // Condition B: 은평차고지 has departure
+  const condB = hasEpDeparture(epArr);
 
-  if (status === 'yes') {
-    card.className = 'card result-card yes';
-    card.innerHTML = `
-      <div class="result-icon">✅</div>
-      <div class="result-title">750B 운행 중</div>
-      <div class="result-sub">
-        지금 은평차고지에서 <strong>750B</strong>가 출발하고 있습니다!<br>
-        ${arr.arrmsg1 ? `다음 버스: <strong>${arr.arrmsg1}</strong>` : ''}
-      </div>
-      ${arrBoxHtml}
-      ${swapHtml}`;
-  } else if (status === 'no') {
-    card.className = 'card result-card no';
-    card.innerHTML = `
-      <div class="result-icon">❌</div>
-      <div class="result-title">750B 지금 안 다님</div>
-      <div class="result-sub">
-        현재 은평차고지에서 <strong>750A</strong> 시간대입니다.<br>
-        750B는 지금 운행하지 않거나 운행이 종료되었습니다.
-        ${arr.arrmsg1 ? `<br><span style="font-size:12px;color:var(--muted)">상태: ${arr.arrmsg1}</span>` : ''}
-      </div>
-      ${arrBoxHtml}
-      ${swapHtml}`;
-  } else {
-    card.className = 'card result-card maybe';
-    card.innerHTML = `
-      <div class="result-icon">⏳</div>
-      <div class="result-title">확인 필요</div>
-      <div class="result-sub">
-        도착 정보를 명확히 판별하지 못했습니다.<br>
-        잠시 후 다시 조회해보세요.
-        ${arr.arrmsg1 ? `<br><span style="font-size:12px;color:var(--muted)">메시지: ${arr.arrmsg1}</span>` : ''}
-      </div>
-      ${arrBoxHtml}
-      ${swapHtml}`;
+  // Status
+  let status;
+  if (condA && condB) status = 'yes';
+  else if (condA && !condB) status = 'ending';
+  else status = 'no';
+
+  // Nearest bus from 은평차고지 (lowest idx = most recently departed from ep)
+  const nearestBus = busStations.length > 0 ? busStations.reduce((a, b) => a.idx < b.idx ? a : b) : null;
+
+  // Next bus info from 은평차고지
+  const epMsg1 = epArr?.arrmsg1 || '';
+  const epMsg2 = epArr?.arrmsg2 || '';
+  const nextMin = extractMinutes(epMsg1);
+  const nextMin2 = extractMinutes(epMsg2);
+
+  // Estimated interval
+  let estInterval = null;
+  if (nextMin !== null && nextMin2 !== null) {
+    estInterval = nextMin2 - nextMin;
+    if (estInterval <= 0) estInterval = null;
+  }
+  // Fallback: use term field
+  if (!estInterval && epArr?.term) {
+    const t = parseInt(epArr.term, 10);
+    if (t > 0) estInterval = t;
   }
 
-  // API card
-  document.getElementById('aD').className = 'api-d ok';
-  document.getElementById('aL').textContent = 'API 조회 성공';
-  document.getElementById('aDet').innerHTML =
-    `정류소: <strong>${epStation?.name || '은평차고지'}</strong> (arsId: ${epStation?.arsId || '?'})<br>
-     노선: <strong>750B</strong> (busRouteId: ${routeId})<br>
-     조회 시각: <strong>${now.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false})}</strong>`;
+  // Next departure time
+  let nextDepartTime = null;
+  if (nextMin !== null) {
+    nextDepartTime = new Date(now.getTime() + nextMin * 60000);
+  }
 
-  const rawData = arr.exists ?
-    Object.entries(arr).filter(([k])=>k!=='raw'&&k!=='exists').map(([k,v])=>`${k}: ${v}`).join('\n') :
-    '도착 정보 없음 (itemList 비어있음)';
-  document.getElementById('aRaw').textContent = rawData;
+  // ── Result card
+  const timeStr = `${pad2(now.getHours())}:${pad2(now.getMinutes())}:${pad2(now.getSeconds())}`;
+
+  if (status === 'yes') {
+    let nextBoxHtml = '';
+    if (nextMin !== null) {
+      nextBoxHtml = `
+        <div class="next-box">
+          <div class="nb-title">다음 버스 은평차고지 출발</div>
+          <div class="nb-row"><span class="nb-label">도착 예정</span><span class="nb-val em">${nextMin}분 후</span></div>
+          ${nextDepartTime ? `<div class="nb-row"><span class="nb-label">예상 출발 시각</span><span class="nb-val">${pad2(nextDepartTime.getHours())}:${pad2(nextDepartTime.getMinutes())}</span></div>` : ''}
+          ${epMsg2 && nextMin2 !== null ? `<div class="nb-row"><span class="nb-label">그 다음 버스</span><span class="nb-val">${nextMin2}분 후</span></div>` : ''}
+          ${estInterval ? `<div class="nb-row"><span class="nb-label">예상 배차간격</span><span class="nb-val">약 ${estInterval}분</span></div>` : ''}
+        </div>`;
+    }
+
+    let nearestHtml = '';
+    if (nearestBus && nearestBus.idx > 0) {
+      nearestHtml = `<br><span style="font-size:12px;color:var(--dim)">최근 출발 버스 위치: <strong>${nearestBus.name}</strong> 부근 (${nearestBus.idx}번째 정류소)</span>`;
+    }
+
+    rc.className = 'card rc yes';
+    rc.innerHTML = `
+      <div class="rc-icon">🚌</div>
+      <div class="rc-title">750B 다니고 있어요!</div>
+      <div class="rc-sub">
+        은평차고지에서 750B가 출발하고 있습니다.
+        ${epMsg1 ? `<br>다음 버스: <strong>${epMsg1}</strong>` : ''}
+        ${nearestHtml}
+      </div>
+      ${nextBoxHtml}`;
+
+  } else if (status === 'ending') {
+    rc.className = 'card rc ending';
+    rc.innerHTML = `
+      <div class="rc-icon">🔚</div>
+      <div class="rc-title">운행 종료 중</div>
+      <div class="rc-sub">
+        노선에 750B 차량이 있지만<br>
+        은평차고지에서 더 이상 출발 예정이 없습니다.
+        ${nearestBus ? `<br><br><span style="font-size:12px;color:var(--dim)">마지막 버스: <strong>${nearestBus.name}</strong> 부근</span>` : ''}
+        ${epMsg1 ? `<br><span style="font-size:12px;color:var(--muted)">은평차고지 상태: ${epMsg1}</span>` : ''}
+      </div>`;
+
+  } else {
+    rc.className = 'card rc no';
+    rc.innerHTML = `
+      <div class="rc-icon">🚫</div>
+      <div class="rc-title">지금은 안 다녀요</div>
+      <div class="rc-sub">
+        은평차고지~서울역 구간에서<br>750B 버스가 감지되지 않습니다.
+        ${epMsg1 ? `<br><br><span style="font-size:12px;color:var(--muted)">은평차고지 상태: ${epMsg1}</span>` : ''}
+      </div>`;
+  }
+
+  // ── Route map
+  routeCard.style.display = 'block';
+  let routeHtml = '<div class="route-title">🗺 노선 현황 (은평차고지 → 서울역)</div><div class="route-line">';
+
+  STATION_ARSIDS.forEach((arsId, idx) => {
+    const arr = results[arsId];
+    const bus = hasBus(arr);
+    const isOrigin = idx === 0;
+    const cls = isOrigin ? 'stop origin' : (bus ? 'stop has-bus' : 'stop');
+    const name = STATION_NAMES[idx];
+
+    let tag = '';
+    if (bus && arr) {
+      const msg = arr.arrmsg1||'';
+      tag = `<span class="bus-tag">🚌 운행 중</span>`;
+    } else if (arr && arr.arrmsg1) {
+      const msg = arr.arrmsg1;
+      if (msg.includes('분') || msg.includes('곧 도착')) {
+        tag = `<span class="arr-tag">${msg}</span>`;
+      }
+    }
+
+    routeHtml += `<div class="${cls}"><span>${name}</span>${tag}</div>`;
+  });
+
+  routeHtml += '</div>';
+  routeCard.innerHTML = routeHtml;
+
+  // ── API card
+  document.getElementById('aD').className = 'api-d ok';
+  document.getElementById('aL').textContent = '조회 완료';
+  document.getElementById('aDet').innerHTML =
+    `조회: <strong>${timeStr}</strong> · 정류소 <strong>18개</strong> 조회<br>
+     감지된 차량: <strong>${busStations.length}개 정류소</strong> · 
+     은평차고지 출발 예정: <strong style="color:${condB?'var(--green)':'var(--red)'}"> ${condB?'있음 ✓':'없음 ✗'}</strong><br>
+     판정: <strong>${status==='yes'?'🚌 운행 중':status==='ending'?'🔚 운행 종료 중':'🚫 미운행'}</strong>`;
+
+  // Raw
+  let raw = '';
+  STATION_ARSIDS.forEach((arsId, idx) => {
+    const arr = results[arsId];
+    raw += `=== [${idx+1}] ${STATION_NAMES[idx]} (arsId:${arsId}) ===\n`;
+    if (arr) {
+      raw += `arrmsg1: ${arr.arrmsg1}\narrmsg2: ${arr.arrmsg2}\nvehId1: ${arr.vehId1}\nvehId2: ${arr.vehId2}\nterm: ${arr.term}\nfirstTm: ${arr.firstTm}\nlastTm: ${arr.lastTm}\n`;
+    } else {
+      raw += '(데이터 없음)\n';
+    }
+    raw += '\n';
+  });
+  document.getElementById('aRaw').textContent = raw;
   document.getElementById('aTog').style.display = 'inline';
 }
 
@@ -397,11 +484,10 @@ function renderErr(msg) {
   document.getElementById('aD').className = 'api-d er';
   document.getElementById('aL').textContent = 'API 오류';
   document.getElementById('aDet').textContent = msg;
-  document.getElementById('resultCard').className = 'card result-card';
-  document.getElementById('resultCard').innerHTML =
-    `<div style="text-align:center;padding:35px 0;color:var(--muted);font-size:13px">
-       ⚠️ 데이터를 불러올 수 없습니다<br>설정을 확인하거나 잠시 후 다시 시도해주세요
-     </div>`;
+  document.getElementById('rc').className = 'card rc';
+  document.getElementById('rc').innerHTML =
+    '<div style="text-align:center;padding:35px 0;color:var(--muted);font-size:12px">⚠️ 데이터를 불러올 수 없습니다<br>설정을 확인해주세요</div>';
+  document.getElementById('routeCard').style.display = 'none';
 }
 
 // ── Main ──
@@ -410,37 +496,49 @@ async function go() {
   const btn = document.getElementById('rBtn');
   btn.classList.add('spinning');
   document.getElementById('aD').className = 'api-d ld';
-  document.getElementById('aL').textContent = 'API 조회 중...';
+  document.getElementById('aL').textContent = '조회 중...';
   document.getElementById('aDet').textContent = '';
   document.getElementById('aTog').style.display = 'none';
   document.getElementById('aRaw').style.display = 'none';
-  document.getElementById('resultCard').innerHTML = '<div class="sk" style="height:200px"></div>';
+  document.getElementById('rc').innerHTML = '<div class="sk" style="height:200px"></div>';
+  document.getElementById('routeCard').style.display = 'none';
 
   try {
-    // Step 1: 750B 노선 ID
+    // Step 1: route ID
     if (!routeId) {
-      document.getElementById('aDet').textContent = '750B 노선 ID 검색 중...';
+      document.getElementById('aDet').textContent = '노선 ID 검색 중...';
       routeId = await findRoute();
       if (!routeId) throw new Error('750B 노선을 찾을 수 없습니다.');
     }
 
-    // Step 2: 은평차고지 정류소 정보
-    if (!epStation) {
-      document.getElementById('aDet').textContent = '은평차고지 정류소 정보 조회 중...';
-      epStation = await findEPStation(routeId);
-      if (!epStation) throw new Error('은평차고지 정류소를 찾을 수 없습니다.');
+    // Step 2: station map (stId, seq for each arsId)
+    if (!stationMap) {
+      document.getElementById('aDet').textContent = '정류소 정보 매핑 중...';
+      stationMap = await buildStationMap(routeId);
+      // Verify we found enough
+      const found = Object.keys(stationMap).length;
+      if (found < 5) throw new Error(`정류소 매핑 부족 (${found}/18). 노선 정보를 확인해주세요.`);
     }
 
-    // Step 3: 실시간 도착 정보
-    document.getElementById('aDet').textContent = '은평차고지 도착 예정 정보 조회 중...';
-    const arr = await getArrival(epStation.stId, routeId, epStation.seq);
+    // Step 3: parallel arrival queries for all 18 stations
+    document.getElementById('aDet').textContent = '18개 정류소 실시간 조회 중...';
+    const now = kst();
 
-    renderResult(arr);
+    const promises = STATION_ARSIDS.map(arsId => {
+      const st = stationMap[arsId];
+      if (!st) return Promise.resolve([arsId, null]);
+      return getArrival(st.stId, routeId, st.seq).then(arr => [arsId, arr]);
+    });
+
+    const rawResults = await Promise.all(promises);
+    const results = {};
+    for (const [arsId, arr] of rawResults) { results[arsId] = arr; }
+
+    render(results, now);
   } catch (e) {
     console.error(e);
     renderErr(e.message);
-    // Reset cached IDs on auth errors
-    if (e.message.includes('KEY')) { routeId = null; epStation = null; }
+    if (e.message.includes('KEY') || e.message.includes('노선')) { routeId = null; stationMap = null; }
   } finally {
     btn.classList.remove('spinning');
   }
@@ -453,31 +551,24 @@ function save() {
   const k = document.getElementById('inK').value.trim();
   if (!w||!k) { alert('두 값 모두 입력해주세요.'); return; }
   workerUrl = w; apiKey = k;
-  localStorage.setItem(SK+'_w',w);
-  localStorage.setItem(SK+'_k',k);
+  localStorage.setItem(SK+'_w',w); localStorage.setItem(SK+'_k',k);
   show(); go();
 }
-
 function reset() {
-  localStorage.removeItem(SK+'_w');
-  localStorage.removeItem(SK+'_k');
-  workerUrl=''; apiKey=''; routeId=null; epStation=null;
+  localStorage.removeItem(SK+'_w'); localStorage.removeItem(SK+'_k');
+  workerUrl=''; apiKey=''; routeId=null; stationMap=null;
   document.getElementById('M').style.display='none';
   document.getElementById('S').style.display='flex';
-  document.getElementById('inW').value='';
-  document.getElementById('inK').value='';
+  document.getElementById('inW').value=''; document.getElementById('inK').value='';
 }
-
 function show() {
   document.getElementById('S').style.display='none';
   document.getElementById('M').style.display='block';
 }
-
 function togRaw() {
   const el = document.getElementById('aRaw');
   el.style.display = el.style.display==='none' ? 'block' : 'none';
 }
-
 function tick() {
   const n = kst();
   const t = n.toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
@@ -485,12 +576,11 @@ function tick() {
   if (el) el.textContent = `${fd(n)} ${t} KST`;
 }
 
-// ── Init ──
+// Init
 const sw = localStorage.getItem(SK+'_w');
 const sk = localStorage.getItem(SK+'_k');
 if (sw && sk) { workerUrl=sw; apiKey=sk; show(); go(); }
-setInterval(tick,1000);
-tick();
+setInterval(tick,1000); tick();
 </script>
 </body>
 </html>
