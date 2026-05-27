@@ -339,68 +339,100 @@ function render(results,now){
 
   const busPositionCount=Object.keys(busPositions).length;
 
-  // 3) Check 덕은교(12001) - our departure indicator
+  // 3) Check front section (은평차고지~DMC역, idx 0~4) for departure indicator
+  //    버스가 덕은교를 지나가는 시간이 짧아서 조회 타이밍에 안 잡힐 수 있으므로
+  //    앞쪽 5개 정류소 중 하나라도 vehId가 있으면 은평차고지에서 출발한 버스로 판정
+  const FRONT_SECTION = 5; // idx 0~4 (은평차고지, 덕은교, 수색교, 수색역앞, DMC역)
+  let frontHasBus = false;
+  let frontBusStation = null; // 앞쪽 구간에서 감지된 가장 가까운 정류소
+  for (let i = 1; i < FRONT_SECTION; i++) { // idx 0 (은평차고지)는 항상 0이므로 1부터
+    const arr = results[ARSIDS[i]];
+    if (!arr) continue;
+    const v1 = arr.vehId1 || '0';
+    const v2 = arr.vehId2 || '0';
+    if ((v1 !== '0' && v1 !== '') || (v2 !== '0' && v2 !== '')) {
+      frontHasBus = true;
+      if (!frontBusStation) frontBusStation = { idx: i, name: NAMES[i] };
+      break;
+    }
+  }
+
+  // 덕은교 데이터 (다음 버스 예측용)
   const depArr=results[DEP_ARSID];
   const depMsg1=depArr?.arrmsg1||'';
   const depMsg2=depArr?.arrmsg2||'';
   const depVid1=depArr?.vehId1||'0';
   const depVid2=depArr?.vehId2||'0';
-  // 덕은교에 vehId가 있으면 → 은평차고지에서 버스가 나오고 있는 것
   const depHasBus=depVid1!=='0'&&depVid1!=='';
   const depHasNextBus=depVid2!=='0'&&depVid2!=='';
 
   // 4) Determine status
-  //    condA: any bus detected on route
-  //    condB: 덕은교에 차량이 감지됨 (은평차고지에서 출발 중)
+  //    condA: 노선 전체에서 차량 감지
+  //    condB: 앞쪽 구간(은평차고지~DMC역)에서 차량 감지 → 은평차고지에서 출발 중
   const condA=totalBuses>0;
-  const condB=depHasBus;
+  const condB=frontHasBus;
 
   let status;
   if(condA&&condB)status='yes';
   else if(condA&&!condB)status='ending';
   else status='no';
 
-  // 5) Next bus info (from 덕은교)
-  //    arrmsg1 = bus that just left 은평차고지 (or about to arrive at 덕은교)
-  //    arrmsg2 = next bus after that
+  // 5) Next bus info
+  //    Try 덕은교 first, then fall back to front section / term-based estimation
   const depMin1=extractMin(depMsg1);
   const depMin2=extractMin(depMsg2);
 
-  // Estimated interval from 덕은교's two buses
+  // Try to find interval from any front-section station that has two arrmsg times
   let estInterval=null;
   if(depMin1!==null&&depMin2!==null){
     estInterval=depMin2-depMin1;
     if(estInterval<=0)estInterval=null;
   }
+  // Try other front-section stations for interval
+  if(!estInterval){
+    for(let i=1;i<FRONT_SECTION;i++){
+      const arr=results[ARSIDS[i]];
+      if(!arr)continue;
+      const m1=extractMin(arr.arrmsg1);
+      const m2=extractMin(arr.arrmsg2);
+      if(m1!==null&&m2!==null&&m2>m1){estInterval=m2-m1;break;}
+    }
+  }
   // Fallback: use term
-  if(!estInterval&&depArr?.term){
-    const t=parseInt(depArr.term,10);
-    if(t>0)estInterval=t;
+  if(!estInterval){
+    // Find term from any station that has it
+    for(let i=0;i<ARSIDS.length;i++){
+      const arr=results[ARSIDS[i]];
+      if(arr?.term){const t=parseInt(arr.term,10);if(t>0){estInterval=t;break;}}
+    }
   }
 
-  // "Next bus from 은평차고지" estimation
-  // depHasNextBus (vehId2) → 다음 버스가 존재
-  // depMin2 → 다음 버스까지 시간 (있으면 정확, 없으면 추정)
+  // Next bus estimation
   let nextBusInfo=null;
   if(status==='yes'){
     if(depHasNextBus){
-      // 덕은교에 두 번째 차량이 잡힘 → 다음 버스 확실히 존재
+      // 덕은교에 두 번째 차량 잡힘 → 확실히 다음 버스 존재
       if(depMin2!==null){
         nextBusInfo={min:depMin2,certain:true};
       }else if(hasRealArrival(depMsg2)){
         nextBusInfo={min:1,certain:false};
       }else{
-        // vehId2 있지만 시간 정보 없음 (출발대기 등) → 배차간격으로 추정
         nextBusInfo={min:estInterval||6,certain:false};
       }
-    }else{
-      // 덕은교에 두 번째 차량 없음 → 다음 버스 불확실
+    }else if(depHasBus&&!depHasNextBus){
+      // 덕은교에 첫 번째 차량만 잡힘
       if(totalBuses>=3){
-        // 노선에 차량이 많으니 곧 올 가능성 있음
         nextBusInfo={min:estInterval||6,certain:false};
       }else{
-        // 노선에 차량 적음 → 마지막 버스일 수 있음
-        nextBusInfo=null;
+        nextBusInfo=null; // 마지막 버스일 수 있음
+      }
+    }else{
+      // 덕은교에 차량 없지만 앞쪽 구간에서 감지 (condB=true via front section)
+      // 배차간격 기반 추정
+      if(totalBuses>=3){
+        nextBusInfo={min:estInterval||6,certain:false};
+      }else if(totalBuses>=1){
+        nextBusInfo=null; // 불확실
       }
     }
   }
@@ -415,14 +447,16 @@ function render(results,now){
     let nbHtml='';
     // Just departed bus info
     let justLeftHtml='';
-    if(isBusHere(depMsg1)){
-      justLeftHtml=`방금 은평차고지 출발 → <strong>덕은교 부근</strong>`;
-    }else if(hasRealArrival(depMsg1)){
-      justLeftHtml=`<strong>${depMsg1}</strong> (덕은교 기준)`;
-    }else if(depHasBus){
-      justLeftHtml=`차량 감지됨 → <strong>은평차고지~덕은교 구간</strong>`;
-    }else{
-      justLeftHtml='';
+    if(depHasBus){
+      if(isBusHere(depMsg1)){
+        justLeftHtml=`방금 은평차고지 출발 → <strong>덕은교 부근</strong>`;
+      }else if(hasRealArrival(depMsg1)){
+        justLeftHtml=`<strong>${depMsg1}</strong> (덕은교 기준)`;
+      }else{
+        justLeftHtml=`차량 감지됨 → <strong>은평차고지~덕은교 구간</strong>`;
+      }
+    }else if(frontBusStation){
+      justLeftHtml=`최근 출발 버스 → <strong>${frontBusStation.name}</strong> 부근`;
     }
 
     if(nextBusInfo){
@@ -516,7 +550,7 @@ function render(results,now){
   document.getElementById('aDet').innerHTML=
     `조회: <strong>${timeStr}</strong> · 정류소 <strong>18개</strong><br>
      감지된 차량: <strong>${totalBuses}대</strong> (${busPositionCount}개 정류소에 위치 확인)<br>
-     덕은교 출발 예정: <strong style="color:${condB?'var(--green)':'var(--red)'}"> ${condB?'있음 ✓':'없음 ✗'}</strong><br>
+     앞쪽 구간 차량: <strong style="color:${condB?'var(--green)':'var(--red)'}"> ${condB?'감지됨 ✓':'미감지 ✗'}</strong> (은평차고지~DMC역)<br>
      판정: <strong>${status==='yes'?'🚌 운행 중':status==='ending'?'🔚 운행 종료 중':'🚫 미운행'}</strong>`;
 
   let raw='';
