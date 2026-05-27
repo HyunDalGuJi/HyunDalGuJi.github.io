@@ -298,37 +298,62 @@ function render(results,now){
   });
   const totalBuses=allVids.size;
 
-  // 2) Find actual bus positions: for each vehId, find the station where it's "곧 도착" or "0번째 전"
-  //    A bus appears in multiple stations' arrival info, but its actual position
-  //    is the station where it's "곧 도착" or "0번째 전"
-  const busPositions={}; // vehId -> { idx, arsId, name }
+  // 2) Find actual bus positions
+  //    Primary: station where the bus is "곧 도착" or "0번째 전" (exact position)
+  //    Fallback: if a vehId exists but never shows "곧 도착"/"0번째 전" anywhere,
+  //              use the lowest-index station where it appears (approximate position)
+  const busPositions={}; // vehId -> { idx, arsId, name, exact }
+  const busFirstSeen={}; // vehId -> { idx, arsId, name } (lowest index where vehId appears)
 
   ARSIDS.forEach((arsId,idx)=>{
     const arr=results[arsId];
     if(!arr)return;
-    // Check arrmsg1
-    if(isBusHere(arr.arrmsg1)&&arr.vehId1&&arr.vehId1!=='0'){
-      busPositions[arr.vehId1]={idx,arsId,name:NAMES[idx]};
+
+    // Track first appearance of each vehId (lowest index = closest to 은평차고지)
+    if(arr.vehId1&&arr.vehId1!=='0'&&arr.vehId1!==''){
+      if(!(arr.vehId1 in busFirstSeen)){
+        busFirstSeen[arr.vehId1]={idx,arsId,name:NAMES[idx]};
+      }
     }
-    // Check arrmsg2
+    if(arr.vehId2&&arr.vehId2!=='0'&&arr.vehId2!==''){
+      if(!(arr.vehId2 in busFirstSeen)){
+        busFirstSeen[arr.vehId2]={idx,arsId,name:NAMES[idx]};
+      }
+    }
+
+    // Exact position: "곧 도착", "0번째 전", etc
+    if(isBusHere(arr.arrmsg1)&&arr.vehId1&&arr.vehId1!=='0'){
+      busPositions[arr.vehId1]={idx,arsId,name:NAMES[idx],exact:true};
+    }
     if(isBusHere(arr.arrmsg2)&&arr.vehId2&&arr.vehId2!=='0'){
-      busPositions[arr.vehId2]={idx,arsId,name:NAMES[idx]};
+      busPositions[arr.vehId2]={idx,arsId,name:NAMES[idx],exact:true};
     }
   });
+
+  // Fallback: for vehIds that have no exact position, use first-seen station
+  for(const vid of allVids){
+    if(!(vid in busPositions)&&(vid in busFirstSeen)){
+      busPositions[vid]={...busFirstSeen[vid],exact:false};
+    }
+  }
 
   const busPositionCount=Object.keys(busPositions).length;
 
   // 3) Check 덕은교(12001) - our departure indicator
   const depArr=results[DEP_ARSID];
-  const depHasArrival=depArr&&hasRealArrival(depArr.arrmsg1);
   const depMsg1=depArr?.arrmsg1||'';
   const depMsg2=depArr?.arrmsg2||'';
+  const depVid1=depArr?.vehId1||'0';
+  const depVid2=depArr?.vehId2||'0';
+  // 덕은교에 vehId가 있으면 → 은평차고지에서 버스가 나오고 있는 것
+  const depHasBus=depVid1!=='0'&&depVid1!=='';
+  const depHasNextBus=depVid2!=='0'&&depVid2!=='';
 
   // 4) Determine status
   //    condA: any bus detected on route
-  //    condB: 덕은교 has real arrival (bus departing from 은평차고지)
+  //    condB: 덕은교에 차량이 감지됨 (은평차고지에서 출발 중)
   const condA=totalBuses>0;
-  const condB=depHasArrival;
+  const condB=depHasBus;
 
   let status;
   if(condA&&condB)status='yes';
@@ -354,23 +379,29 @@ function render(results,now){
   }
 
   // "Next bus from 은평차고지" estimation
-  // If depMsg2 has real arrival → next bus departs 은평차고지 ~depMin2 minutes before arriving 덕은교
-  // 덕은교 is 1 stop from 은평차고지, so departure ≈ arrival at 덕은교 - 1~2 min
-  // For simplicity, we say "약 X분 후" based on depMsg2 time
+  // depHasNextBus (vehId2) → 다음 버스가 존재
+  // depMin2 → 다음 버스까지 시간 (있으면 정확, 없으면 추정)
   let nextBusInfo=null;
   if(status==='yes'){
-    if(depMin2!==null){
-      // arrmsg2 has a time → next bus exists
-      nextBusInfo={min:depMin2,certain:true};
-    }else if(hasRealArrival(depMsg2)){
-      // "곧 도착" etc but no minutes extractable
-      nextBusInfo={min:1,certain:false};
-    }else if(depMsg2==='출발대기'&&totalBuses>=3){
-      // Bus waiting at depot, but many buses on route → likely will depart
-      nextBusInfo={min:estInterval||6,certain:false};
-    }else if(depMsg2==='출발대기'&&totalBuses<=2){
-      // Few buses → might be last
-      nextBusInfo=null; // can't estimate
+    if(depHasNextBus){
+      // 덕은교에 두 번째 차량이 잡힘 → 다음 버스 확실히 존재
+      if(depMin2!==null){
+        nextBusInfo={min:depMin2,certain:true};
+      }else if(hasRealArrival(depMsg2)){
+        nextBusInfo={min:1,certain:false};
+      }else{
+        // vehId2 있지만 시간 정보 없음 (출발대기 등) → 배차간격으로 추정
+        nextBusInfo={min:estInterval||6,certain:false};
+      }
+    }else{
+      // 덕은교에 두 번째 차량 없음 → 다음 버스 불확실
+      if(totalBuses>=3){
+        // 노선에 차량이 많으니 곧 올 가능성 있음
+        nextBusInfo={min:estInterval||6,certain:false};
+      }else{
+        // 노선에 차량 적음 → 마지막 버스일 수 있음
+        nextBusInfo=null;
+      }
     }
   }
 
@@ -382,8 +413,17 @@ function render(results,now){
   // ── Result card ──
   if(status==='yes'){
     let nbHtml='';
-    // Just departed bus
-    const justLeft=isBusHere(depMsg1)?`방금 은평차고지 출발 → <strong>덕은교 부근</strong>`:`<strong>${depMsg1}</strong> (덕은교 기준)`;
+    // Just departed bus info
+    let justLeftHtml='';
+    if(isBusHere(depMsg1)){
+      justLeftHtml=`방금 은평차고지 출발 → <strong>덕은교 부근</strong>`;
+    }else if(hasRealArrival(depMsg1)){
+      justLeftHtml=`<strong>${depMsg1}</strong> (덕은교 기준)`;
+    }else if(depHasBus){
+      justLeftHtml=`차량 감지됨 → <strong>은평차고지~덕은교 구간</strong>`;
+    }else{
+      justLeftHtml='';
+    }
 
     if(nextBusInfo){
       const nextTime=new Date(now.getTime()+nextBusInfo.min*60000);
@@ -413,7 +453,7 @@ function render(results,now){
       <div class="rc-title">750B 다니고 있어요!</div>
       <div class="rc-sub">
         은평차고지에서 750B가 출발하고 있습니다.<br>
-        ${justLeft}
+        ${justLeftHtml?justLeftHtml:''}
         ${nearestFromEp?`<br><span style="font-size:12px;color:var(--dim)">최근 출발 버스: <strong>${nearestFromEp.name}</strong> 부근</span>`:''}
       </div>
       ${nbHtml}`;
@@ -444,20 +484,25 @@ function render(results,now){
   }
 
   // ── Route map ──
-  // Only show 🚌 at stops where a bus is actually located
-  const stopsWithBus=new Set();
-  Object.values(busPositions).forEach(p=>stopsWithBus.add(p.idx));
+  // Show bus at stops where it's actually located
+  const stopsWithBus=new Map(); // idx -> { exact }
+  Object.values(busPositions).forEach(p=>{
+    const existing=stopsWithBus.get(p.idx);
+    if(!existing||p.exact) stopsWithBus.set(p.idx,{exact:p.exact});
+  });
 
   routeCard.style.display='block';
   let rh=`<div class="route-title">🗺 노선 현황 · 차량 ${totalBuses}대 감지</div><div class="route-line">`;
 
   ARSIDS.forEach((arsId,idx)=>{
     const isOrigin=idx===0;
-    const hasBusHere=stopsWithBus.has(idx);
-    const cls=isOrigin?'stop origin':(hasBusHere?'stop bus':'stop');
+    const busInfo=stopsWithBus.get(idx);
+    const cls=isOrigin?'stop origin':(busInfo?'stop bus':'stop');
     let tag='';
-    if(hasBusHere){
-      tag='<span class="bus-tag">🚌 운행 중</span>';
+    if(busInfo){
+      tag=busInfo.exact
+        ?'<span class="bus-tag">🚌 운행 중</span>'
+        :'<span class="bus-tag" style="background:rgba(245,166,35,.15);color:var(--orange)">🚌 부근</span>';
     }
     rh+=`<div class="${cls}"><span>${NAMES[idx]}</span>${tag}</div>`;
   });
